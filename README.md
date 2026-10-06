@@ -8,9 +8,9 @@ This project is not affiliated with odecet.info or its operator. The site can ch
 
 - Signs in with your odecet.info account from **Settings → Devices & services → Add integration**.
 - Imports the measurement history, either from the CSV export or from the history table. You choose which one to use.
-- Creates a sensor for each meter it finds. Meters that are not on the account are not offered.
-- Syncs once a day in the background, with retry and jitter after a failure.
-- Offers a manual sync button. Manual and automatic syncs share a limit of one sync per minute, and Home Assistant shows when the next one is allowed.
+- Creates one device and a **Reading** sensor for each meter. Types that are not on the account are not offered.
+- Syncs once a day in the background, at about 04:00 local time, with jitter. A failure retries with backoff and never sooner than one minute. After five failures it opens a repair and waits for the next day.
+- Adds a **Sync now** button. Manual and automatic syncs share a limit of one sync per minute. **Next manual sync** shows when the button will be available again.
 - Ignores readings older than the start date you set.
 
 ## Install
@@ -34,7 +34,9 @@ The integration is not in the default HACS catalog.
 | Fetch method | Options | `Auto` tries CSV export, then the history table. `CSV` or `Table` forces one method. |
 | Sync from | Options | Readings before this date are ignored. Empty means the full history that the site returns. |
 
-After setup, the device page shows the meters, a **Sync now** button, and a **Next manual sync** timestamp. The button stays unavailable until a minute has passed since the previous attempt.
+After setup, the account device shows **Sync now** and **Next manual sync**. Each meter is its own device with a **Reading** sensor.
+
+Water readings labeled `m3` are stored as cubic metres and can be added to the Energy dashboard as water. If the site does not send a unit, which is the case for heat on the current pages, the sensor shows the raw register, a repair explains why, and the value is not written to statistics. The integration does not guess a unit.
 
 ## Debug
 
