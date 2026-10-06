@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+  administration: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,8 +16,12 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: uv python install 3.13
       - run: uv sync --frozen
-      - run: uv run ruff check custom_components tests
+      - run: uv run ruff check custom_components tests dev/check_github_metadata.py
       - run: uv run pytest
+      - name: Check GitHub topics and license
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: uv run python dev/check_github_metadata.py
 
   hassfest:
     runs-on: ubuntu-latest

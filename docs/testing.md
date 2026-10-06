@@ -11,6 +11,14 @@ uv run ruff check custom_components tests
 uv run pytest
 ```
 
+`tests/test_publish.py` checks the tree for the hassfest and HACS failures that do not need GitHub: manifest key order, the recorder dependency, the integration brand icon, and a LICENSE file GitHub can identify as MIT. The same hassfest image CI uses can be run locally:
+
+```bash
+docker run --rm -v "$PWD://github/workspace" ghcr.io/home-assistant/hassfest
+```
+
+In Actions, `dev/check_github_metadata.py` checks that the repository has a specific topic and a detected SPDX license. Generic topics such as `home-assistant` do not count.
+
 The suite covers:
 
 - A valid sign-in (`True`) and the honeypot, antiforgery token, bad password, timeout, HTTP 429, and HTTP 503

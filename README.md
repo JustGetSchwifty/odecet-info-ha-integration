@@ -2,7 +2,7 @@
 
 Unofficial Home Assistant integration that reads hot water, cold water, and heat meter history from [odecet.info](https://odecet.info) and exposes one meter sensor per device.
 
-This project is not affiliated with odecet.info or its operator. The site can change or block access at any time. See [LICENSE](LICENSE).
+This project is not affiliated with odecet.info or its operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
 ## What it does
 
@@ -57,4 +57,4 @@ uv run python dev/bootstrap_ha.py
 
 ## License
 
-[MIT](LICENSE), with an extra disclaimer: unofficial project, no responsibility for future site changes.
+[MIT](LICENSE). The unofficial-project disclaimer is in [NOTICE](NOTICE). The license file itself stays plain MIT so GitHub and HACS can identify it.

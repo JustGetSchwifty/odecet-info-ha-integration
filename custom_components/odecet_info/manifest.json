@@ -1,6 +1,7 @@
 {
   "domain": "odecet_info",
   "name": "Odecet.info",
+  "after_dependencies": ["recorder"],
   "codeowners": ["@JustGetSchwifty"],
   "config_flow": true,
   "documentation": "https://github.com/JustGetSchwifty/odecet-info-ha-integration",

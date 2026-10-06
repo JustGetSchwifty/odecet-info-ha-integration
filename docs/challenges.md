@@ -26,6 +26,14 @@ The history repeats identical serial, timestamp, and value rows. They collapse t
 
 The dashboard form needs the hidden `flat` value from that account's page. The integration reads it and requests the range it needs, then drops days before the user's start date.
 
+## Publish checks
+
+HACS looks for `custom_components/odecet_info/brand/icon.png`. A `brand/` directory at the repository root does not satisfy that check.
+
+GitHub license detection returns SPDX `NOASSERTION` when the MIT text has an extra disclaimer section. HACS then rejects the repository. The disclaimer lives in `NOTICE`. `LICENSE` stays the MIT text.
+
+HACS also ignores generic topics such as `home-assistant` and `hacs`. The repository needs at least one specific topic, such as `water` or `energy`.
+
 ## HACS wants a GitHub device login
 
 HACS 2 will not create its config entry until someone authorizes it at
