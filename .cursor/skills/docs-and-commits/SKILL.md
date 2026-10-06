@@ -16,6 +16,7 @@ Keep these files true for the code that is about to be committed:
 | `docs/website-contract.md` | Login, export URL, columns, or units change |
 | `docs/challenges.md` | A non-obvious site or Home Assistant problem is solved |
 | `docs/testing.md` | Commands, tiers, or fixtures change |
+| `CHANGELOG.md`, `version.json` | A version is cut. See `.cursor/skills/versioning/SKILL.md` |
 | `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/` | The working agreement changes |
 
 Write them in English. Do not mention values from `.env` or anything under `.private/`.

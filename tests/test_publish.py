@@ -20,6 +20,18 @@ PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 OWN_PLATFORMS = {"button", "sensor"}
 
 
+def test_manifest_version_matches_version_json() -> None:
+    """HACS and the changelog must describe the same version."""
+    manifest = json.loads((INTEGRATION / "manifest.json").read_text(encoding="utf-8"))
+    recorded = json.loads((ROOT / "version.json").read_text(encoding="utf-8"))
+    assert manifest["version"] == recorded["version"]
+    assert recorded["channel"] in {"stable", "rc"}
+    if recorded["channel"] == "rc":
+        assert "-rc." in recorded["version"]
+    else:
+        assert "-rc." not in recorded["version"]
+
+
 def test_manifest_key_order_matches_hassfest() -> None:
     """hassfest requires domain, name, then the remaining keys in alphabetical order."""
     manifest = json.loads((INTEGRATION / "manifest.json").read_text(encoding="utf-8"))
