@@ -30,3 +30,16 @@ class OdecetTransportError(OdecetError):
 
 class OdecetStructureError(OdecetError):
     """The HTML or CSV no longer matches the known page contract."""
+
+
+def flow_error_key(err: OdecetError) -> str:
+    """Map a client error to a config-flow translation key."""
+    if isinstance(err, OdecetValidationError):
+        return "invalid_input"
+    if isinstance(err, OdecetAuthError):
+        return "invalid_auth"
+    if isinstance(err, OdecetRateLimitError):
+        return "rate_limited"
+    if isinstance(err, OdecetTransportError):
+        return "cannot_connect"
+    return "unknown"

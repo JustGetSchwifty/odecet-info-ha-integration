@@ -1,0 +1,12 @@
+{
+  "domain": "odecet_info",
+  "name": "Odecet.info",
+  "codeowners": ["@JustGetSchwifty"],
+  "config_flow": true,
+  "documentation": "https://github.com/JustGetSchwifty/odecet-info-ha-integration",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/JustGetSchwifty/odecet-info-ha-integration/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

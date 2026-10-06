@@ -67,9 +67,7 @@ class OdecetClient:
         token = _find_token(html)
         if not token:
             raise OdecetStructureError("Sign-in page has no antiforgery token")
-        action = urljoin(
-            self._signin_url, _find_sign_in_action(html) or self._signin_url
-        )
+        action = urljoin(self._signin_url, _find_sign_in_action(html) or self._signin_url)
         # `website` is the honeypot. It must be present and empty.
         body, status = await self._request(
             "POST",
@@ -102,9 +100,7 @@ class OdecetClient:
         parsed = await self._parse_dashboard(dashboard, method, now)
         return _filter_from(parsed, sync_from)
 
-    async def _load_dashboard(
-        self, sync_from: date | None, now: datetime | None
-    ) -> str:
+    async def _load_dashboard(self, sync_from: date | None, now: datetime | None) -> str:
         html, status = await self._request("GET", f"{self._origin}/")
         self._raise_for_status(status)
         if is_sign_in_page(html):
@@ -115,9 +111,7 @@ class OdecetClient:
         current = (now or datetime.now(SITE_TIMEZONE)).astimezone(SITE_TIMEZONE).date()
         start = sync_from or _earliest_period(form) or current
         params = _period_params(form, start, current)
-        ranged, ranged_status = await self._request(
-            "GET", f"{self._origin}/", params=params
-        )
+        ranged, ranged_status = await self._request("GET", f"{self._origin}/", params=params)
         self._raise_for_status(ranged_status)
         return ranged
 
@@ -279,9 +273,7 @@ def _find_csv_link(html: str) -> str | None:
 def _filter_from(parsed: ReadingSet, sync_from: date | None) -> ReadingSet:
     if sync_from is None:
         return parsed
-    kept = tuple(
-        reading for reading in parsed.readings if reading.timestamp.date() >= sync_from
-    )
+    kept = tuple(reading for reading in parsed.readings if reading.timestamp.date() >= sync_from)
     ignored = len(parsed.readings) - len(kept)
     issues = parsed.issues
     if ignored:

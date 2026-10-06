@@ -18,7 +18,7 @@ alwaysApply: false
 
 ## Style
 
-- Format with Ruff. Line length is 88.
+- Format with Ruff. Line length is 100.
 - Prefer `pathlib`, `datetime.timezone`, and stdlib `csv` / `html.parser`.
 - No blocking calls inside async functions. HTTP uses `aiohttp`.
 - Tests are deterministic. No test contacts odecet.info. Fixtures are synthetic.

@@ -72,18 +72,13 @@ def test_duplicate_rows_collapse_and_problems_are_kept() -> None:
     assert Decimal("1.000") in {reading.value for reading in cold_points.readings}
     assert all(reading.serial != "1004" for reading in parsed.readings)
     unknown_unit = [
-        reading
-        for reading in parsed.readings
-        if reading.serial == "1006" and reading.unit is None
+        reading for reading in parsed.readings if reading.serial == "1006" and reading.unit is None
     ]
     assert unknown_unit
 
 
 def test_semicolon_csv_and_decimal_thousands() -> None:
-    text = (
-        "Typ měřiče;Výrobní číslo;Datum;Stav;Jednotka\n"
-        "Studená voda;1001;05.10.2026;1.234,5;m3\n"
-    )
+    text = "Typ měřiče;Výrobní číslo;Datum;Stav;Jednotka\nStudená voda;1001;05.10.2026;1.234,5;m3\n"
     parsed = parse_csv(text, now=NOW)
     assert parsed.readings[0].value == Decimal("1234.5")
     assert parsed.readings[0].unit == "m³"

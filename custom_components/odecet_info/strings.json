@@ -1,0 +1,108 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to odecet.info",
+        "description": "Sign in with the account that can see the meter history. This integration is not affiliated with odecet.info.",
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "signin_url": "Sign-in URL"
+        },
+        "data_description": {
+          "username": "The email address used on the odecet.info sign-in page.",
+          "password": "Stored in the Home Assistant config entry. It is not written to logs.",
+          "signin_url": "Leave the default unless the site uses a different sign-in address."
+        }
+      },
+      "meters": {
+        "title": "Choose meters",
+        "description": "Only meter types found on this account can be selected. {missing}",
+        "data": {
+          "mediums": "Meters",
+          "fetch_method": "How to read the history",
+          "sync_from": "Sync from"
+        },
+        "data_description": {
+          "mediums": "Readings for types you leave out are ignored.",
+          "fetch_method": "Auto tries the CSV export first, then the history table. Manual sync is limited to once a minute.",
+          "sync_from": "Readings before this date are ignored. Leave empty to keep the history the site returns."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Sign in again",
+        "description": "odecet.info rejected the saved password for {username}.",
+        "data": {
+          "password": "Password"
+        },
+        "data_description": {
+          "password": "The new password replaces the one stored for this account."
+        }
+      },
+      "reconfigure": {
+        "title": "Update the account",
+        "description": "Change the email, password, or sign-in URL. Meter choices stay in the integration options.",
+        "data": {
+          "username": "Email",
+          "password": "Password",
+          "signin_url": "Sign-in URL"
+        },
+        "data_description": {
+          "username": "The email address used on the odecet.info sign-in page.",
+          "password": "Stored in the Home Assistant config entry. It is not written to logs.",
+          "signin_url": "Leave the default unless the site uses a different sign-in address."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The email or password was rejected.",
+      "invalid_input": "Enter an email address and a password.",
+      "cannot_connect": "odecet.info could not be reached.",
+      "rate_limited": "odecet.info asked us to slow down. Wait a minute and try again.",
+      "unknown": "The site response did not match the expected pages.",
+      "mediums_required": "Select at least one meter type."
+    },
+    "abort": {
+      "already_configured": "This account is already configured.",
+      "no_meters": "The account signed in, but no cold water, hot water, or heat meters were found.",
+      "reauth_successful": "The password was updated.",
+      "reconfigure_successful": "The account settings were updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Odecet.info options",
+        "description": "Only meter types found on this account can be selected. {missing}",
+        "data": {
+          "mediums": "Meters",
+          "fetch_method": "How to read the history",
+          "sync_from": "Sync from"
+        },
+        "data_description": {
+          "mediums": "Readings for types you leave out are ignored.",
+          "fetch_method": "Auto tries the CSV export first, then the history table.",
+          "sync_from": "Readings before this date are ignored. Leave empty to keep the history the site returns."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The saved password was rejected. Sign in again from the repair or reconfigure the account.",
+      "invalid_input": "Enter an email address and a password.",
+      "cannot_connect": "The account could not be checked. You can still save these settings.",
+      "rate_limited": "odecet.info asked us to slow down. Wait a minute and try again.",
+      "unknown": "The site response did not match the expected pages.",
+      "mediums_required": "Select at least one meter type."
+    }
+  },
+  "issues": {
+    "missing_unit": {
+      "title": "Meter {serial} has no unit",
+      "description": "odecet.info did not provide a unit for meter {serial}. The register is shown as a raw number and is not added to water or energy statistics."
+    },
+    "sync_failed": {
+      "title": "Synchronization keeps failing",
+      "description": "Reading odecet.info failed {attempts} times in a row. The next try is the regular daily sync. Use Sync now after the one-minute cooldown if you want to try earlier."
+    }
+  }
+}

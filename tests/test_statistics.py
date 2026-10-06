@@ -24,9 +24,7 @@ def _reading(day: int, hour: int, value: str, serial: str = "1001") -> Reading:
 
 
 def test_sum_grows_by_positive_deltas() -> None:
-    points = hourly_statistics(
-        (_reading(5, 8, "10"), _reading(5, 9, "12"), _reading(6, 8, "15"))
-    )
+    points = hourly_statistics((_reading(5, 8, "10"), _reading(5, 9, "12"), _reading(6, 8, "15")))
     assert [point.sum for point in points] == [0.0, 2.0, 5.0]
     assert [point.state for point in points] == [10.0, 12.0, 15.0]
     assert all(point.start.minute == 0 for point in points)

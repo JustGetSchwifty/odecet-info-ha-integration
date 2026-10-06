@@ -102,9 +102,7 @@ class ReadingSet:
                     readings=ordered,
                 )
             )
-        return tuple(
-            sorted(meters, key=lambda meter: (meter.medium.value, meter.serial))
-        )
+        return tuple(sorted(meters, key=lambda meter: (meter.medium.value, meter.serial)))
 
     def mediums(self) -> tuple[Medium, ...]:
         """Meter types present in this set, in enum order."""

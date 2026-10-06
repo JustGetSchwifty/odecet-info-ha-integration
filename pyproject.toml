@@ -9,6 +9,7 @@ dependencies = ["aiohttp>=3.10"]
 dev = [
     "pytest>=8.3",
     "pytest-asyncio>=0.25",
+    "pytest-homeassistant-custom-component>=0.13.236",
     "ruff>=0.8",
 ]
 
@@ -18,7 +19,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.ruff]
-line-length = 88
+line-length = 100
 target-version = "py313"
 src = ["custom_components", "tests", "dev"]
 

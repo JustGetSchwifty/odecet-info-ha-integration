@@ -118,9 +118,7 @@ def parse_csv(text: str, *, now: datetime | None = None) -> ReadingSet:
     delimiter = ";" if sample.count(";") > sample.count(",") else ","
     reader = csv.reader(io.StringIO(stripped), delimiter=delimiter)
     rows = [
-        tuple(cell.strip() for cell in row)
-        for row in reader
-        if any(cell.strip() for cell in row)
+        tuple(cell.strip() for cell in row) for row in reader if any(cell.strip() for cell in row)
     ]
     if len(rows) < 1:
         raise OdecetStructureError("CSV export has no header")

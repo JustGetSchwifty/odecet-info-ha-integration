@@ -88,9 +88,7 @@ async def test_sync_from_drops_older_readings() -> None:
         now=NOW,
     )
     cold = next(meter for meter in parsed.meters() if meter.serial == "1001")
-    assert all(
-        reading.timestamp.date() >= date(2026, 1, 1) for reading in cold.readings
-    )
+    assert all(reading.timestamp.date() >= date(2026, 1, 1) for reading in cold.readings)
     assert any(issue.code == "before_sync_from" for issue in parsed.issues)
     assert session.calls[3]["params"]["fromYear"] == "2026"
     assert session.calls[3]["params"]["fromMonth"] == "1"
