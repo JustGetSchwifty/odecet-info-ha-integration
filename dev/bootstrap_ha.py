@@ -74,7 +74,7 @@ def wait_until_up(seconds: int = 180) -> None:
             if status in {200, 401}:
                 print("Home Assistant is answering")
                 return
-        except (urllib.error.URLError, TimeoutError):
+        except (urllib.error.URLError, TimeoutError, ConnectionError):
             pass
         time.sleep(3)
     raise SystemExit("Home Assistant did not start")
@@ -83,6 +83,9 @@ def wait_until_up(seconds: int = 180) -> None:
 def onboard() -> str:
     status, body = request("GET", "/api/onboarding")
     print(f"onboarding status {status}")
+    if status == 404:
+        print("onboarding already finished")
+        return login()
     steps = body if isinstance(body, list) else []
     done = {item["step"] for item in steps if isinstance(item, dict) and item.get("done")}
     token = ""
@@ -182,11 +185,17 @@ def configure(token: str, flow_id: str, data: dict) -> dict:
     return body
 
 
-def setup_hacs(token: str) -> None:
+def setup_hacs(token: str) -> str:
+    """Return a token that is valid after HACS is ready.
+
+    HACS 2 asks for a GitHub device login before it creates an entry. This
+    local container has no GitHub session, so the entry is stored without a
+    token and public repository calls use the unauthenticated API.
+    """
     entries = request("GET", "/api/config/config_entries/entry", token=token)[1]
     if isinstance(entries, list) and any(item.get("domain") == "hacs" for item in entries):
         print("HACS config entry already exists")
-        return
+        return token
     flow = start_flow(token, "hacs")
     if flow.get("type") == "form" and flow.get("step_id") == "user":
         flow = configure(
@@ -200,14 +209,52 @@ def setup_hacs(token: str) -> None:
             },
         )
     if flow.get("type") == "progress":
-        placeholders = flow.get("description_placeholders") or {}
-        code = placeholders.get("code", "")
-        print("HACS is waiting for GitHub device authorization.")
-        print(f"Open https://github.com/login/device and enter code {code}")
-        raise SystemExit(2)
+        print("HACS asked for a GitHub device login.")
+        print("Continuing with unauthenticated access to the public repository.")
+        inject_hacs_entry()
+        wait_until_up()
+        return login()
     if flow.get("type") != "create_entry":
         raise SystemExit(f"HACS setup stopped at {flow.get('type')} {flow.get('reason')}")
     print("HACS config entry created")
+    return token
+
+
+def inject_hacs_entry() -> None:
+    """Stop Home Assistant, store a HACS entry with no token, and start it again."""
+    import secrets
+    import subprocess
+    from datetime import UTC, datetime
+
+    compose = ["docker", "compose", "-f", "dev/docker-compose.yml"]
+    subprocess.run([*compose, "stop"], check=True, cwd=ROOT)
+    path = ROOT / "dev" / "ha-config" / ".storage" / "core.config_entries"
+    stored = json.loads(path.read_text(encoding="utf-8"))
+    entries = stored["data"]["entries"]
+    if not any(item.get("domain") == "hacs" for item in entries):
+        now = datetime.now(UTC).replace(microsecond=0).isoformat()
+        entries.append(
+            {
+                "created_at": now,
+                "data": {"token": None},
+                "disabled_by": None,
+                "discovery_keys": {},
+                "domain": "hacs",
+                "entry_id": secrets.token_hex(13).upper(),
+                "minor_version": 1,
+                "modified_at": now,
+                "options": {"experimental": True},
+                "pref_disable_new_entities": False,
+                "pref_disable_polling": False,
+                "source": "user",
+                "subentries": [],
+                "title": "",
+                "unique_id": None,
+                "version": 1,
+            }
+        )
+        path.write_text(json.dumps(stored, indent=2), encoding="utf-8")
+    subprocess.run([*compose, "start"], check=True, cwd=ROOT)
 
 
 def install_repository(token: str) -> None:
@@ -348,7 +395,7 @@ def main() -> None:
     env = load_env()
     wait_until_up()
     token = onboard()
-    setup_hacs(token)
+    token = setup_hacs(token)
     install_repository(token)
     token = restart(token)
     setup_integration(token, env)

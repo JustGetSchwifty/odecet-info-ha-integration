@@ -26,6 +26,24 @@ The history repeats identical serial, timestamp, and value rows. They collapse t
 
 The dashboard form needs the hidden `flat` value from that account's page. The integration reads it and requests the range it needs, then drops days before the user's start date.
 
+## HACS wants a GitHub device login
+
+HACS 2 will not create its config entry until someone authorizes it at
+`https://github.com/login/device`. The local container has no GitHub session.
+The bootstrap stores a HACS entry with an empty token so downloads of this
+public repository use the unauthenticated GitHub API. That is enough for one
+install. If GitHub answers 403, sign in to HACS from the Home Assistant UI.
+
+The default HACS catalog host (`data-v2.hacs.xyz`) was unreachable from this
+container. Adding the repository by its GitHub name does not need that host.
+
+## A meter device must point at an existing account device
+
+Home Assistant rejects `via_device` when the parent device does not exist yet,
+and current releases want `via_device_id` instead of the identifier tuple.
+The account device is created before the meter sensors, and the link uses
+whichever field that Home Assistant version declares.
+
 ## Statistics must not be imported twice
 
 Importing an external statistic and also letting the sensor record `total_increasing` would double-count water or heat. History is imported with `async_import_statistics` onto the sensor entity (`source` `recorder`) and only when the unit is known.

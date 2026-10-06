@@ -18,6 +18,7 @@ from homeassistant.components.sensor import (
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -41,6 +42,8 @@ async def async_setup_entry(
     """Create one register sensor per enabled meter, plus the cooldown sensor."""
     coordinator: OdecetCoordinator = entry.runtime_data
     known: set[str] = set()
+    account = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
+    via_device_id = account.id if account is not None else None
 
     def _add_meters() -> None:
         if not coordinator.data:
@@ -54,7 +57,7 @@ async def async_setup_entry(
             if unique in known:
                 continue
             known.add(unique)
-            fresh.append(MeterSensor(coordinator, meter, unique))
+            fresh.append(MeterSensor(coordinator, meter, unique, via_device_id))
         if fresh:
             async_add_entities(fresh)
 
@@ -70,20 +73,32 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
     _attr_name = "Reading"
     _attr_suggested_display_precision = 3
 
-    def __init__(self, coordinator: OdecetCoordinator, meter: Meter, unique_id: str) -> None:
+    def __init__(
+        self,
+        coordinator: OdecetCoordinator,
+        meter: Meter,
+        unique_id: str,
+        via_device_id: str | None,
+    ) -> None:
         super().__init__(coordinator)
         self._serial = meter.serial
         self._medium = meter.medium
         self._attr_unique_id = unique_id
         entry_id = coordinator.config_entry.entry_id
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
-            name=f"{meter.medium.label} {meter.serial}",
-            manufacturer="odecet.info",
-            model=meter.medium.label,
-            serial_number=meter.serial,
-            via_device=(DOMAIN, entry_id),
-        )
+        # Newer Home Assistant wants the registry id. Older releases still
+        # take the (domain, identifier) tuple and ignore the other key.
+        device_info: dict[str, object] = {
+            "identifiers": {(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
+            "name": f"{meter.medium.label} {meter.serial}",
+            "manufacturer": "odecet.info",
+            "model": meter.medium.label,
+            "serial_number": meter.serial,
+        }
+        if "via_device_id" in DeviceInfo.__annotations__ and via_device_id:
+            device_info["via_device_id"] = via_device_id
+        else:
+            device_info["via_device"] = (DOMAIN, entry_id)
+        self._attr_device_info = device_info  # type: ignore[assignment]
 
     def _meter(self) -> Meter | None:
         if not self.coordinator.data:

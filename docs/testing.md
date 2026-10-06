@@ -31,6 +31,8 @@ uv run python dev/bootstrap_ha.py
 
 HACS can only download a public GitHub repository. If the commits are not on the remote yet, push with the deploy key first, then run the bootstrap again. The key stays in `.private/deploy` and is not copied anywhere else.
 
+HACS normally stops to ask for a GitHub device login. The bootstrap does not have a GitHub session, so it stores the HACS entry without a token and downloads this public repository anyway. You can connect GitHub later from the HACS panel if the unauthenticated API is rate limited.
+
 ```bash
 GIT_SSH_COMMAND="ssh -i .private/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" git push -u origin HEAD
 ```
