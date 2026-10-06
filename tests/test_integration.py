@@ -54,9 +54,7 @@ async def test_sensors_statistics_and_disabled_medium(hass, enable_custom_integr
         await hass.async_block_till_done()
 
     states = {state.entity_id: state for state in hass.states.async_all()}
-    readings = [
-        state for state in states.values() if state.entity_id.endswith("_reading")
-    ]
+    readings = [state for state in states.values() if state.entity_id.endswith("_reading")]
     assert len(readings) == 1
     cold = readings[0]
     assert cold.state == "12.0" or cold.state == "12"
@@ -96,9 +94,7 @@ async def test_heat_without_a_unit_raises_a_repair(hass, enable_custom_integrati
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
-    heat = next(
-        state for state in hass.states.async_all() if state.entity_id.endswith("_reading")
-    )
+    heat = next(state for state in hass.states.async_all() if state.entity_id.endswith("_reading"))
     assert heat.state in {"140", "140.0"}
     assert "unit_of_measurement" not in heat.attributes
     assert "device_class" not in heat.attributes
