@@ -275,8 +275,6 @@ def install_repository(token: str) -> None:
         if match:
             repo_id = str(match["id"])
             print(f"repository registered id={repo_id} installed={match.get('installed')}")
-            if match.get("installed"):
-                return
             break
         time.sleep(3)
     if repo_id is None:
