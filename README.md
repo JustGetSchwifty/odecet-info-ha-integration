@@ -1,5 +1,11 @@
 # Odecet.info for Home Assistant
 
+[![CI](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/JustGetSchwifty/odecet-info-ha-integration?display_name=tag)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases)
+[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5)](https://github.com/hacs/integration)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
+
 Unofficial Home Assistant integration that reads hot water, cold water, and heat meter history from [odecet.info](https://odecet.info) and exposes one meter sensor per device.
 
 This project is not affiliated with odecet.info or its operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
