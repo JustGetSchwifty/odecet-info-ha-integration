@@ -78,12 +78,11 @@ def main() -> int:
     spdx = (payload.get("license") or {}).get("spdx_id")
     failed = False
     if not topics:
-        # The workflow ignores this HACS check until an admin adds the topics.
         print(
-            "Warning: HACS topics are still missing. "
-            f"Add {', '.join(REQUIRED_TOPICS)} in the GitHub About box, "
-            "then remove `ignore: topics` from the workflow."
+            "HACS will reject this repository: it has no topic outside the generic list. "
+            f"Add {', '.join(REQUIRED_TOPICS)} in the GitHub About box."
         )
+        failed = True
     else:
         print(f"Valid topics: {', '.join(topics)}")
     if spdx in {None, "NOASSERTION"}:
