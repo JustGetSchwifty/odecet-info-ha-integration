@@ -17,7 +17,7 @@ uv run pytest
 docker run --rm -v "$PWD://github/workspace" ghcr.io/home-assistant/hassfest
 ```
 
-In Actions, `dev/check_github_metadata.py` checks that the repository has a specific topic and a detected SPDX license. Generic topics such as `home-assistant` do not count.
+In Actions, `dev/check_github_metadata.py` checks the detected SPDX license. HACS also wants a topic that is not generic (`home-assistant` and `hacs` do not count). Add `water`, `energy`, and `metering` in the repository About box. Until those exist, the HACS action ignores the topics check, because a deploy key cannot change repository settings.
 
 The suite covers:
 

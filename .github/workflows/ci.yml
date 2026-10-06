@@ -32,3 +32,7 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Topics are GitHub repository settings. A deploy key cannot set them.
+          # HACS also ignores generic topics such as home-assistant.
+          # Add water, energy, and metering in the About box, then delete this ignore.
+          ignore: topics

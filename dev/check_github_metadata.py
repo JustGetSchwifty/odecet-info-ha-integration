@@ -75,19 +75,15 @@ def main() -> int:
         return 0
     payload = _github(token, "GET", f"/repos/{repository}")
     topics = valid_topics(payload.get("topics") or [])
-    if not topics:
-        merged = list(dict.fromkeys([*(payload.get("topics") or []), *REQUIRED_TOPICS]))
-        _github(token, "PUT", f"/repos/{repository}/topics", {"names": merged})
-        payload = _github(token, "GET", f"/repos/{repository}")
-        topics = valid_topics(payload.get("topics") or [])
     spdx = (payload.get("license") or {}).get("spdx_id")
     failed = False
     if not topics:
+        # The workflow ignores this HACS check until an admin adds the topics.
         print(
-            "HACS will reject this repository: it has no topic outside the generic list. "
-            "Add one such as water or energy in the GitHub About box."
+            "Warning: HACS topics are still missing. "
+            f"Add {', '.join(REQUIRED_TOPICS)} in the GitHub About box, "
+            "then remove `ignore: topics` from the workflow."
         )
-        failed = True
     else:
         print(f"Valid topics: {', '.join(topics)}")
     if spdx in {None, "NOASSERTION"}:
