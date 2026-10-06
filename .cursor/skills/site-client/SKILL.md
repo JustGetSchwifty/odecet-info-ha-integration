@@ -17,14 +17,17 @@ odecet.info is an ASP.NET site. The sign-in page is HTML, not a JSON API.
 
 ## Fetching readings
 
-The user chooses `auto`, `csv`, or `table`.
+The history is the server-rendered table `kt_ecommerce_report_customer_orders_table` on `GET /`. DataTables only paginates it in the browser. Re-request the period with the hidden `flat` field and `fromMonth` / `fromYear` / `toMonth` / `toYear`. Read `flat` from the page.
 
-- `auto` tries the CSV export, then the history table.
-- A CSV response that is actually the login HTML is a failure of that method, not an empty dataset.
-- Parse Czech dates as `DD.MM.YYYY` in `Europe/Prague`.
-- Accept a decimal comma. Store values as `Decimal`.
-- Map meter types only through the alias table in the parser. Unknown types stay unknown and are reported.
-- Attach a unit only when the header or the cell contains one. Do not guess `m³` or `kWh`.
+The CSV button is DataTables `csvHtml5`. There is no CSV URL today.
+
+- `csv` downloads a real CSV link when one exists, otherwise serializes that table and parses the CSV.
+- `table` reads the HTML cells.
+- `auto` tries the CSV path, then the HTML table.
+- A sign-in page returned instead of the dashboard fails that method.
+- Parse `DD.MM.YYYY` as `Europe/Prague` at 12:00 local. Accept a decimal comma or dot. Store `Decimal`.
+- Map meter types only through the alias table. Unknown types are skipped and reported.
+- Normalize `m3` to `m³`. An empty unit stays empty. Do not invent `kWh` or `GJ` for heat.
 
 ## Fixtures
 
