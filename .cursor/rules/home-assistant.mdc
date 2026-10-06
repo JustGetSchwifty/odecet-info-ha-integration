@@ -1,0 +1,21 @@
+---
+description: Home Assistant custom integration patterns
+globs: "custom_components/**/*.py"
+alwaysApply: false
+---
+
+# Home Assistant
+
+Follow current Home Assistant developer docs for config flows, coordinators, and the recorder statistics API.
+
+- Domain is `odecet_info`. One config entry per account.
+- Credentials and the sign-in URL belong in `ConfigEntry.data`. Fetch method, enabled mediums, and the sync-from date belong in options.
+- Validate the login inside the config flow before creating the entry. Implement reauth and reconfigure.
+- Fetch through one `DataUpdateCoordinator` subclass. Entities extend `CoordinatorEntity`. Set `PARALLEL_UPDATES = 0` on platforms that use the coordinator.
+- Do not set a short `update_interval`. The daily schedule and the manual button call `async_refresh`, and both honor the 60-second cooldown.
+- Set `has_entity_name = True`. One device per physical meter, identified by serial number.
+- Assign `device_class` and a Home Assistant unit only when the parsed unit maps cleanly. Never invent a unit.
+- Import history with `async_import_statistics` onto the sensor entity (`source="recorder"`). Do not also publish an external statistic for the same consumption.
+- Statistics need `mean_type`, `unit_class`, and timestamps at the top of an hour with a timezone.
+- Diagnostics and repairs must not include the password, token, or cookies.
+- Use Home Assistant's shared `aiohttp` session via `async_get_clientsession`.

@@ -1,0 +1,25 @@
+# Secrets and local credentials. Never commit these.
+.env
+.private/
+
+# Live site captures and the local Home Assistant config contain account data.
+dev/capture/
+dev/ha-config/
+
+# Python and test caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Editor and OS
+.DS_Store
+.idea/
+.vscode/

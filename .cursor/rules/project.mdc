@@ -1,0 +1,45 @@
+---
+description: Language, secrets, documentation, and commit policy for this repository
+alwaysApply: true
+---
+
+# Project rules
+
+## Language
+
+Write every repository artifact in English. That includes Python identifiers, comments, docstrings, Home Assistant strings, log messages, Markdown, skills, rules, and commit messages.
+
+## Secrets
+
+Never read `.private/` into a file that is committed. Never commit `.env`, `dev/capture/`, or `dev/ha-config/`.
+
+When a command prints environment or HTTP bodies, redact passwords, emails, antiforgery tokens, and cookies before writing notes or docs.
+
+The deploy key path is `.private/deploy`. Reference the path only. Do not copy the key material.
+
+## Documentation stays current
+
+If you change behavior, the website contract, scheduling, entity model, or how to run tests, update the matching doc in the same change:
+
+- `README.md` — what it is, install, configure, debug
+- `docs/architecture.md` — structure and data flow
+- `docs/website-contract.md` — login, export, columns, units
+- `docs/challenges.md` — problems found and how they were solved
+- `docs/testing.md` — tier 1 and tier 2
+- `AGENTS.md` and `.cursor/rules/` when the working agreement changes
+
+Do not leave docs describing a previous design.
+
+## Commits
+
+After each logical chunk, create one local commit. A chunk is one coherent change: guardrails, the site client, the integration, tests for that layer, or docs for a completed behavior.
+
+- Subject line is imperative, specific, and under 72 characters.
+- Body is one sentence on why, when the subject is not enough.
+- Do not commit secrets, captures, or the Home Assistant config volume.
+- Do not push unless the user asks.
+- Exception: tier-2 HACS install needs the public GitHub repository. Push with the deploy key only far enough to make that install succeed, then stop.
+
+## Scope
+
+Do not add features that the current task does not need. Prefer a small extension of an existing type over a parallel implementation.

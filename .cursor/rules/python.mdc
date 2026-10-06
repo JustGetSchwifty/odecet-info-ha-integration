@@ -1,0 +1,28 @@
+---
+description: Python design rules for the client, parsers, and tests
+globs: "**/*.py"
+alwaysApply: false
+---
+
+# Python
+
+## Design
+
+- Use type hints on public functions and dataclass fields.
+- Model site data with frozen dataclasses. Use `Decimal` for meter values and timezone-aware datetimes for timestamps.
+- Raise a specific exception from `odecet_info.client.errors`. Do not use bare `except`.
+- Keep I/O in the client. Parsers accept text and return readings. They do not open sockets.
+- If a new column, unit, or meter type appears, extend the existing mapping tables. Do not add a second parser for the same format.
+- A bad row is skipped and recorded as a warning. A bad login or an unrecognizable document fails the whole fetch.
+- Comments explain why a guard exists (honeypot, antiforgery, locale). Do not restate the code.
+
+## Style
+
+- Format with Ruff. Line length is 88.
+- Prefer `pathlib`, `datetime.timezone`, and stdlib `csv` / `html.parser`.
+- No blocking calls inside async functions. HTTP uses `aiohttp`.
+- Tests are deterministic. No test contacts odecet.info. Fixtures are synthetic.
+
+## Errors worth naming
+
+Separate authentication failure, local validation, rate limiting, transport failure, and a document the parser does not recognize. Callers in Home Assistant map those differently (reauth, repair, retry).
