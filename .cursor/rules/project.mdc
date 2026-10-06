@@ -38,7 +38,8 @@ After each logical chunk, create one local commit. A chunk is one coherent chang
 - Body is one sentence on why, when the subject is not enough.
 - Do not commit secrets, captures, or the Home Assistant config volume.
 - Do not push unless the user asks.
-- Exception: tier-2 HACS install needs the public GitHub repository. Push with the deploy key only far enough to make that install succeed, then stop.
+- A minor or patch version cut publishes an annotated tag and a GitHub Release. See `.cursor/skills/versioning/SKILL.md`. Do not push a major or the first release candidate unless the user explicitly approved that version in the current conversation.
+- Before a push, run `uv run python dev/bootstrap_ha.py --local`. That copies the working tree into Home Assistant. HACS cannot test a commit that is not on GitHub yet.
 
 ## Scope
 

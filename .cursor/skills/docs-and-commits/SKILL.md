@@ -43,7 +43,9 @@ Do not push after a commit.
 Push only when:
 
 - the user explicitly asks, or
-- tier 2 cannot install through HACS because the commit is not on GitHub yet.
+- a minor or patch version cut is being published, including its annotated tag and GitHub Release.
+
+Do not push so that HACS can see an unpublished commit. Pre-push testing copies the local tree. See `.cursor/skills/tier2-ha/SKILL.md`.
 
 Use the deploy key and then stop:
 

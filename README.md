@@ -52,7 +52,7 @@ Local checks are described in [docs/testing.md](docs/testing.md). Copy [.env.exa
 ```bash
 uv run pytest
 docker compose -f dev/docker-compose.yml up -d --build
-uv run python dev/bootstrap_ha.py
+uv run python dev/bootstrap_ha.py --local
 ```
 
 ## License

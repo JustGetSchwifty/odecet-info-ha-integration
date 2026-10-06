@@ -34,6 +34,10 @@ GitHub license detection returns SPDX `NOASSERTION` when the MIT text has an ext
 
 HACS also ignores generic topics such as `home-assistant` and `hacs`. The repository needs at least one specific topic, such as `water` or `energy`.
 
+## HACS cannot test a commit that is not on GitHub
+
+The pre-push check used to download the integration through HACS. That download is the last commit already on GitHub, so it never saw the change that was about to be pushed. Pre-push testing now copies the working tree into the Home Assistant config. The HACS download runs after the push, and after a release it downloads that release tag.
+
 ## HACS wants a GitHub device login
 
 HACS 2 will not create its config entry until someone authorizes it at

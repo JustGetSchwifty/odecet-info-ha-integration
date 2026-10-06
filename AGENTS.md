@@ -22,8 +22,8 @@ Never log passwords, antiforgery tokens, or session cookies.
 1. Keep changes small and match the patterns already in the tree. Extend a parser, client, or entity base instead of copying it.
 2. Update the docs and agent instructions in the same change when behavior, the website contract, or the test process changes.
 3. Run tier-1 tests before calling a chunk done. See `.cursor/skills/tier1-tests/SKILL.md`.
-4. Run tier-2 before any git push. See `.cursor/skills/tier2-ha/SKILL.md`.
-5. Commit each logical chunk locally with a short English message. Do not push unless the user asks, except when tier-2 HACS install cannot proceed without the public GitHub repository. See `.cursor/skills/docs-and-commits/SKILL.md`.
+4. Before any git push, run the local Home Assistant check (`bootstrap_ha.py --local`). It copies the working tree. It does not download HACS. See `.cursor/skills/tier2-ha/SKILL.md`.
+5. Commit each logical chunk locally with a short English message. Do not push unless the user asks. A minor or patch version cut also publishes a GitHub release; see `.cursor/skills/versioning/SKILL.md`. After that release is on GitHub, run `bootstrap_ha.py --hacs --version vX.Y.Z`.
 
 ## Where the rules live
 
@@ -31,4 +31,5 @@ Never log passwords, antiforgery tokens, or session cookies.
 - `.cursor/rules/python.mdc` — Python design
 - `.cursor/rules/home-assistant.mdc` — integration patterns
 - `.cursor/skills/site-client/SKILL.md` — login, parsing, fixtures
+- `.cursor/skills/versioning/SKILL.md` — semver, changelog, GitHub releases
 - `docs/` — architecture, website contract, challenges, testing

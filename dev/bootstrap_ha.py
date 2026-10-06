@@ -1,4 +1,11 @@
-"""Install this integration through HACS into the local Home Assistant container.
+"""Boot the local Home Assistant container and load this integration.
+
+`--local` copies the working tree into the container config. That is the
+pre-push check: HACS cannot see a commit that is not on GitHub yet.
+
+`--hacs` downloads the public repository through HACS. Pass `--version v0.1.4`
+after a GitHub release, because HACS then installs the latest release rather
+than the default branch. A tag that is not also a GitHub Release is ignored.
 
 Reads `.env` for the odecet.info account. Prints status lines only.
 Does not print the account password, the Home Assistant token, or cookies.
@@ -6,8 +13,10 @@ Does not print the account password, the Home Assistant token, or cookies.
 
 from __future__ import annotations
 
+import argparse
 import asyncio
 import json
+import shutil
 import sys
 import time
 import urllib.error
@@ -257,7 +266,24 @@ def inject_hacs_entry() -> None:
     subprocess.run([*compose, "start"], check=True, cwd=ROOT)
 
 
-def install_repository(token: str) -> None:
+def install_local() -> None:
+    """Replace the integration in the HA config with the files on disk.
+
+    This is not a HACS download. The copy is what pre-push testing runs.
+    """
+    source = ROOT / "custom_components" / "odecet_info"
+    destination = ROOT / "dev" / "ha-config" / "custom_components" / "odecet_info"
+    if destination.exists():
+        shutil.rmtree(destination)
+    shutil.copytree(
+        source,
+        destination,
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+    )
+    print("copied the local integration into the Home Assistant config")
+
+
+def install_repository(token: str, version: str | None = None) -> None:
     """Add the GitHub repository and download it. HACS acks adds even when they fail."""
     status, added = websocket(
         token,
@@ -279,7 +305,11 @@ def install_repository(token: str) -> None:
         time.sleep(3)
     if repo_id is None:
         raise SystemExit("HACS did not register the repository")
-    status, downloaded = websocket(token, "hacs/repository/download", repository=repo_id)
+    download_fields: dict[str, object] = {"repository": repo_id}
+    if version:
+        download_fields["version"] = version
+        print(f"downloading HACS version {version}")
+    status, downloaded = websocket(token, "hacs/repository/download", **download_fields)
     print(f"hacs download -> {status} {downloaded}")
     if isinstance(downloaded, dict) and downloaded.get("success") is False:
         raise SystemExit("HACS download failed")
@@ -305,7 +335,17 @@ def websocket(token: str, command: str, **fields: object) -> tuple[str, object]:
     return asyncio.run(_call())
 
 
+def integration_configured(token: str) -> bool:
+    _status, entries = request("GET", "/api/config/config_entries/entry", token=token)
+    if not isinstance(entries, list):
+        return False
+    return any(item.get("domain") == "odecet_info" for item in entries)
+
+
 def setup_integration(token: str, env: dict[str, str]) -> None:
+    if integration_configured(token):
+        print("integration config entry already exists")
+        return
     flow = start_flow(token, "odecet_info")
     if flow.get("type") != "form":
         raise SystemExit("Odecet.info flow did not open")
@@ -389,12 +429,41 @@ def restart(token: str) -> str:
     return login()
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--local",
+        action="store_true",
+        help="Copy the working tree into Home Assistant. Use this before a push.",
+    )
+    mode.add_argument(
+        "--hacs",
+        action="store_true",
+        help="Download the public GitHub repository through HACS. Use this after a push.",
+    )
+    parser.add_argument(
+        "--version",
+        help="Release tag HACS should download, for example v0.1.4. Only with --hacs.",
+    )
+    args = parser.parse_args()
+    if args.version and not args.hacs:
+        parser.error("--version requires --hacs")
+    if not args.local and not args.hacs:
+        parser.error("Choose --local (before a push) or --hacs (after a push or release)")
+    return args
+
+
 def main() -> None:
+    args = parse_args()
     env = load_env()
     wait_until_up()
     token = onboard()
-    token = setup_hacs(token)
-    install_repository(token)
+    if args.local:
+        install_local()
+    else:
+        token = setup_hacs(token)
+        install_repository(token, version=args.version)
     token = restart(token)
     setup_integration(token, env)
     wait_for_readings(token)

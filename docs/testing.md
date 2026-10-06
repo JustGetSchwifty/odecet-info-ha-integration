@@ -1,6 +1,6 @@
 # Testing
 
-Tier 1 is fast and never contacts odecet.info. Tier 2 boots Home Assistant and installs this repository through HACS.
+Tier 1 is fast and never contacts odecet.info. Before a push, tier 2 loads the working tree into local Home Assistant. After a push or a GitHub release, a separate command checks that HACS can download that published ref.
 
 ## Tier 1
 
@@ -28,22 +28,24 @@ The suite covers:
 
 Fixtures in `tests/fixtures/` are synthetic. Live captures stay in gitignored `dev/capture/`.
 
-## Tier 2
+## Tier 2 before a push
 
-Run this before every git push. It is the check that the integration actually installs from GitHub.
+HACS downloads GitHub. A commit that is only on this machine is not in that download, so the pre-push check copies `custom_components/odecet_info` into the container config and restarts Home Assistant. That copy is a local install, not a HACS install.
 
 ```bash
 docker compose -f dev/docker-compose.yml up -d --build
-uv run python dev/bootstrap_ha.py
+uv run python dev/bootstrap_ha.py --local
 ```
 
-HACS can only download a public GitHub repository. If the commits are not on the remote yet, push with the deploy key first, then run the bootstrap again. The key stays in `.private/deploy` and is not copied anywhere else.
+## HACS after a push or release
 
-HACS normally stops to ask for a GitHub device login. The bootstrap does not have a GitHub session, so it stores the HACS entry without a token and downloads this public repository anyway. You can connect GitHub later from the HACS panel if the unauthenticated API is rate limited.
+Run this only after the commit or release is already on GitHub. It proves HACS can fetch what users get. After the first GitHub Release, HACS installs the latest release instead of `main`, and a tag without a release does not count.
 
 ```bash
-GIT_SSH_COMMAND="ssh -i .private/deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new" git push -u origin HEAD
+uv run python dev/bootstrap_ha.py --hacs --version vX.Y.Z
 ```
+
+HACS normally stops to ask for a GitHub device login. The bootstrap does not have a GitHub session, so it stores the HACS entry without a token and downloads this public repository anyway. You can connect GitHub later from the HACS panel if the unauthenticated API is rate limited.
 
 The container keeps its config in gitignored `dev/ha-config/`. That directory contains the odecet.info password after bootstrap, so it must not be committed.
 
