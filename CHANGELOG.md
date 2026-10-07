@@ -6,6 +6,23 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.2.0] - 2026-10-07
+
+The integration now follows the published Home Assistant quality-scale rules through platinum, as far as a website login allows.
+
+### Added
+
+- A dedicated sign-in session, so the account cookies are not attached to other integrations.
+- Translated entity names, a sync icon, and translated errors.
+- Removal of a meter device when that meter disappears from the account.
+- README install steps that match the current HACS flow, the brand banner, and a My Home Assistant link.
+- Nightly hassfest and HACS validation, strict type checking, and a 95 percent coverage gate.
+- Dependabot for Python and GitHub Actions. The floating hassfest and HACS action refs stay unpinned.
+
+### Why
+
+Users get a more reliable install and a codebase that can be checked against the quality scale. Home Assistant does not grade custom integrations, so the platinum mark is this project's own assessment. The login still reads the website, so the integration stays a custom component.
+
 ## [0.1.4] - 2026-10-07
 
 First recorded release of the unofficial odecet.info integration.
@@ -23,4 +40,5 @@ First recorded release of the unofficial odecet.info integration.
 
 Users need a version they can install through HACS. Recording one 0.1.4 avoids pretending that 0.1.1 through 0.1.3 were released.
 
+[0.2.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.0
 [0.1.4]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.1.4

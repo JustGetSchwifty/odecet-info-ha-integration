@@ -29,7 +29,7 @@ Never log passwords, antiforgery tokens, or session cookies.
 
 - `.cursor/rules/project.mdc` — language, secrets, docs, commits
 - `.cursor/rules/python.mdc` — Python design
-- `.cursor/rules/home-assistant.mdc` — integration patterns
+- `.cursor/rules/home-assistant.mdc` — integration patterns and the quality-scale file
 - `.cursor/skills/site-client/SKILL.md` — login, parsing, fixtures
 - `.cursor/skills/versioning/SKILL.md` — semver, changelog, GitHub releases
 - `docs/` — architecture, website contract, challenges, testing

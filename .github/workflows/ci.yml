@@ -3,6 +3,9 @@ name: CI
 on:
   push:
   pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   test:
@@ -13,6 +16,7 @@ jobs:
       - run: uv python install 3.13
       - run: uv sync --frozen
       - run: uv run ruff check custom_components tests dev/check_github_metadata.py
+      - run: uv run mypy
       - run: uv run pytest
       - name: Check GitHub topics and license
         env:

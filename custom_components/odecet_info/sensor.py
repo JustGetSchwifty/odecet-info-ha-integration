@@ -6,6 +6,7 @@ import logging
 from datetime import datetime
 
 from homeassistant.components.recorder.models import (
+    StatisticData,
     StatisticMeanType,
     StatisticMetaData,
 )
@@ -26,6 +27,7 @@ from homeassistant.util.unit_conversion import EnergyConverter, VolumeConverter
 
 from custom_components.odecet_info.const import CONF_MEDIUMS, DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
+from custom_components.odecet_info.entry import OdecetConfigEntry
 from custom_components.odecet_info.models import Medium, Meter
 from custom_components.odecet_info.parse import measurement_kind
 from custom_components.odecet_info.statistics import hourly_statistics
@@ -36,7 +38,7 @@ PARALLEL_UPDATES = 0
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry,
+    entry: OdecetConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Create one register sensor per enabled meter, plus the cooldown sensor."""
@@ -70,7 +72,7 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
     """Latest register value for one physical meter."""
 
     _attr_has_entity_name = True
-    _attr_name = "Reading"
+    _attr_translation_key = "reading"
     _attr_suggested_display_precision = 3
 
     def __init__(
@@ -85,20 +87,20 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         self._medium = meter.medium
         self._attr_unique_id = unique_id
         entry_id = coordinator.config_entry.entry_id
+        device_info = DeviceInfo(
+            identifiers={(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
+            name=f"{meter.medium.label} {meter.serial}",
+            manufacturer="odecet.info",
+            model=meter.medium.label,
+            serial_number=meter.serial,
+        )
         # Newer Home Assistant wants the registry id. Older releases still
-        # take the (domain, identifier) tuple and ignore the other key.
-        device_info: dict[str, object] = {
-            "identifiers": {(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
-            "name": f"{meter.medium.label} {meter.serial}",
-            "manufacturer": "odecet.info",
-            "model": meter.medium.label,
-            "serial_number": meter.serial,
-        }
-        if "via_device_id" in DeviceInfo.__annotations__ and via_device_id:
-            device_info["via_device_id"] = via_device_id
+        # take the (domain, identifier) tuple.
+        if via_device_id is not None and "via_device_id" in DeviceInfo.__annotations__:
+            device_info["via_device_id"] = via_device_id  # type: ignore[typeddict-unknown-key]
         else:
             device_info["via_device"] = (DOMAIN, entry_id)
-        self._attr_device_info = device_info  # type: ignore[assignment]
+        self._attr_device_info = device_info
 
     def _meter(self) -> Meter | None:
         if not self.coordinator.data:
@@ -107,6 +109,11 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
             if meter.serial == self._serial and meter.medium is self._medium:
                 return meter
         return None
+
+    @property
+    def available(self) -> bool:
+        """Unavailable when the latest successful fetch no longer includes this meter."""
+        return super().available and self._meter() is not None
 
     @property
     def native_value(self) -> float | None:
@@ -171,24 +178,26 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         if not points:
             return
         unit_class = VolumeConverter.UNIT_CLASS if kind == "volume" else EnergyConverter.UNIT_CLASS
+        name = self.name if isinstance(self.name, str) else self.entity_id
         metadata: StatisticMetaData = {
             "mean_type": StatisticMeanType.NONE,
             "has_sum": True,
-            "name": self.name,
+            "name": name,
             "source": "recorder",
             "statistic_id": self.entity_id,
             "unit_class": unit_class,
             "unit_of_measurement": meter.unit,
         }
-        statistics = [
-            {
+        statistics: list[StatisticData] = []
+        for point in points:
+            row: StatisticData = {
                 "start": point.start,
                 "state": point.state,
                 "sum": point.sum,
-                **({"last_reset": point.last_reset} if point.last_reset is not None else {}),
             }
-            for point in points
-        ]
+            if point.last_reset is not None:
+                row["last_reset"] = point.last_reset
+            statistics.append(row)
         try:
             async_import_statistics(self.hass, metadata, statistics)
         except (HomeAssistantError, KeyError):
@@ -200,7 +209,7 @@ class NextManualSyncSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
     """When the one-minute gate opens again. Home Assistant renders this as a countdown."""
 
     _attr_has_entity_name = True
-    _attr_name = "Next manual sync"
+    _attr_translation_key = "next_manual_sync"
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 

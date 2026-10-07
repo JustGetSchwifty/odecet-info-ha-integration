@@ -1,0 +1,9 @@
+{
+  "entity": {
+    "button": {
+      "sync_now": {
+        "default": "mdi:sync"
+      }
+    }
+  }
+}

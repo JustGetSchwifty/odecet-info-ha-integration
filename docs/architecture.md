@@ -3,8 +3,8 @@
 The integration is one Home Assistant config entry per odecet.info account. Code that talks to the site does not import Home Assistant, so the parser tests run without it.
 
 ```text
-config flow  -> OdecetClient.async_fetch
-coordinator  -> OdecetClient.async_fetch -> ReadingSet
+config flow  -> dedicated session -> OdecetClient.async_fetch
+coordinator  -> dedicated session -> OdecetClient.async_fetch -> ReadingSet
 sensors      -> latest register, and hourly statistics when the unit is known
 button       -> coordinator refresh, blocked for 60 seconds after the last attempt
 ```
@@ -21,6 +21,14 @@ button       -> coordinator refresh, blocked for 60 seconds after the last attem
 | `coordinator.py` | Daily schedule, failure backoff, repair issues |
 | `sensor.py` | One register per meter, plus the next-manual-sync timestamp |
 | `button.py` | Sync now |
+
+## Session
+
+The client accepts an `aiohttp` session and does not create one. The coordinator creates a session with `async_create_clientsession` while the config entry is being set up, so Home Assistant closes it on unload. Setup and options probes create a session with `auto_cleanup=False` and close it before the step returns. Login cookies never go on the shared Home Assistant session.
+
+## Quality scale
+
+`quality_scale.yaml` records every published rule as `done` or `exempt`. The manifest says `platinum` because that file is complete. Home Assistant does not review custom integrations, so the mark is this repository's assessment against the published rules.
 
 ## Scheduling
 

@@ -55,6 +55,10 @@ def test_hacs_brand_icon_is_a_png_inside_the_integration() -> None:
     icon = INTEGRATION / "brand" / "icon.png"
     assert icon.is_file()
     assert icon.read_bytes().startswith(PNG_MAGIC)
+    assert _png_size(icon) == (256, 256)
+    assert _png_size(INTEGRATION / "brand" / "icon@2x.png") == (512, 512)
+    assert _png_size(INTEGRATION / "brand" / "logo.png") == (512, 170)
+    assert _png_size(INTEGRATION / "brand" / "logo@2x.png") == (1024, 341)
 
 
 def test_generic_github_topics_do_not_satisfy_hacs() -> None:
@@ -72,6 +76,94 @@ def test_license_file_stays_identifiable_as_mit() -> None:
     notice = (ROOT / "NOTICE").read_text(encoding="utf-8")
     assert "unofficial" in notice.lower()
     assert "odecet.info" in notice
+
+
+def _png_size(path: Path) -> tuple[int, int]:
+    import struct
+
+    header = path.read_bytes()[:24]
+    assert header.startswith(PNG_MAGIC)
+    width, height = struct.unpack(">II", header[16:24])
+    return width, height
+
+
+QUALITY_RULES = {
+    "action-exceptions",
+    "action-setup",
+    "appropriate-polling",
+    "async-dependency",
+    "brands",
+    "common-modules",
+    "config-entry-unloading",
+    "config-flow",
+    "config-flow-test-coverage",
+    "dependency-transparency",
+    "devices",
+    "diagnostics",
+    "discovery",
+    "discovery-update-info",
+    "docs-actions",
+    "docs-conditions",
+    "docs-configuration-parameters",
+    "docs-data-update",
+    "docs-examples",
+    "docs-high-level-description",
+    "docs-installation-instructions",
+    "docs-installation-parameters",
+    "docs-known-limitations",
+    "docs-removal-instructions",
+    "docs-supported-devices",
+    "docs-supported-functions",
+    "docs-triggers",
+    "docs-troubleshooting",
+    "docs-use-cases",
+    "dynamic-devices",
+    "entity-category",
+    "entity-device-class",
+    "entity-disabled-by-default",
+    "entity-event-setup",
+    "entity-translations",
+    "entity-unavailable",
+    "entity-unique-id",
+    "exception-translations",
+    "has-entity-name",
+    "icon-translations",
+    "inject-websession",
+    "integration-owner",
+    "log-when-unavailable",
+    "parallel-updates",
+    "reauthentication-flow",
+    "reconfiguration-flow",
+    "repair-issues",
+    "runtime-data",
+    "stale-devices",
+    "strict-typing",
+    "test-before-configure",
+    "test-before-setup",
+    "test-coverage",
+    "unique-config-entry",
+}
+
+
+def test_english_translations_match_strings() -> None:
+    """Home Assistant loads translations/en.json. strings.json must stay a copy."""
+    strings = (INTEGRATION / "strings.json").read_text(encoding="utf-8")
+    english = (INTEGRATION / "translations" / "en.json").read_text(encoding="utf-8")
+    assert english == strings
+
+
+def test_quality_scale_lists_every_published_rule() -> None:
+    """A rule is done, or exempt with a reason. The file cannot drift from the scale."""
+    import yaml
+
+    recorded = yaml.safe_load((INTEGRATION / "quality_scale.yaml").read_text(encoding="utf-8"))
+    rules = recorded["rules"]
+    assert set(rules) == QUALITY_RULES
+    for name, value in rules.items():
+        if value == "done":
+            continue
+        assert value["status"] == "exempt", name
+        assert value.get("comment"), name
 
 
 def _imported_components() -> set[str]:

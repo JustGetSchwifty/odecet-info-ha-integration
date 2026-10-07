@@ -1,0 +1,75 @@
+rules:
+  action-setup:
+    status: exempt
+    comment: Sync is a button entity, not a service action.
+  action-exceptions:
+    status: exempt
+    comment: There are no service actions. The button raises a translated HomeAssistantError.
+  appropriate-polling: done
+  async-dependency:
+    status: exempt
+    comment: There is no third-party I/O library. The client lives in the integration and is already async.
+  brands: done
+  common-modules: done
+  config-entry-unloading: done
+  config-flow: done
+  config-flow-test-coverage: done
+  dependency-transparency:
+    status: exempt
+    comment: The manifest has no PyPI requirements. aiohttp is provided by Home Assistant.
+  devices: done
+  diagnostics: done
+  discovery:
+    status: exempt
+    comment: odecet.info is a website login. It does not advertise itself on the LAN.
+  discovery-update-info:
+    status: exempt
+    comment: There is no discovery, so there is no discovered address to update.
+  docs-actions:
+    status: exempt
+    comment: The integration provides no service actions.
+  docs-conditions:
+    status: exempt
+    comment: The integration provides no conditions.
+  docs-configuration-parameters: done
+  docs-data-update: done
+  docs-examples: done
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-installation-parameters: done
+  docs-known-limitations: done
+  docs-removal-instructions: done
+  docs-supported-devices: done
+  docs-supported-functions: done
+  docs-triggers:
+    status: exempt
+    comment: The integration provides no triggers.
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices: done
+  entity-category: done
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: exempt
+    comment: The reading is the product, and the cooldown sensor is how the one-minute gate is shown.
+  entity-event-setup: done
+  entity-translations: done
+  entity-unavailable: done
+  entity-unique-id: done
+  exception-translations: done
+  has-entity-name: done
+  icon-translations: done
+  inject-websession: done
+  integration-owner: done
+  log-when-unavailable: done
+  parallel-updates: done
+  reauthentication-flow: done
+  reconfiguration-flow: done
+  repair-issues: done
+  runtime-data: done
+  stale-devices: done
+  strict-typing: done
+  test-before-configure: done
+  test-before-setup: done
+  test-coverage: done
+  unique-config-entry: done

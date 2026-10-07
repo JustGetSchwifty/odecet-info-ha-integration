@@ -14,9 +14,10 @@ from homeassistant.config_entries import (
     OptionsFlow,
 )
 from homeassistant.core import callback
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import (
     DateSelector,
+    SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
@@ -41,10 +42,10 @@ from custom_components.odecet_info.models import FetchMethod, Medium, ReadingSet
 
 _LOGGER = logging.getLogger(__name__)
 
-_FETCH_OPTIONS = [
-    {"value": FetchMethod.AUTO.value, "label": "Auto (CSV, then table)"},
-    {"value": FetchMethod.CSV.value, "label": "CSV export"},
-    {"value": FetchMethod.TABLE.value, "label": "History table"},
+_FETCH_OPTIONS: list[SelectOptionDict] = [
+    SelectOptionDict(value=FetchMethod.AUTO.value, label="Auto (CSV, then table)"),
+    SelectOptionDict(value=FetchMethod.CSV.value, label="CSV export"),
+    SelectOptionDict(value=FetchMethod.TABLE.value, label="History table"),
 ]
 
 
@@ -76,7 +77,7 @@ def _meter_schema(
             vol.Required(CONF_MEDIUMS, default=selected): SelectSelector(
                 SelectSelectorConfig(
                     options=[
-                        {"value": medium.value, "label": medium.label}
+                        SelectOptionDict(value=medium.value, label=medium.label)
                         for medium in Medium
                         if medium.value in available
                     ],
@@ -239,13 +240,17 @@ class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def _probe(self, credentials: dict[str, Any]) -> ReadingSet:
-        client = OdecetClient(
-            async_get_clientsession(self.hass),
-            credentials[CONF_SIGNIN_URL].strip(),
-            credentials[CONF_USERNAME].strip(),
-            credentials[CONF_PASSWORD],
-        )
-        return await client.async_fetch(FetchMethod.AUTO)
+        session = async_create_clientsession(self.hass, auto_cleanup=False)
+        try:
+            client = OdecetClient(
+                session,
+                credentials[CONF_SIGNIN_URL].strip(),
+                credentials[CONF_USERNAME].strip(),
+                credentials[CONF_PASSWORD],
+            )
+            return await client.async_fetch(FetchMethod.AUTO)
+        finally:
+            session.detach()
 
     @staticmethod
     @callback
@@ -277,9 +282,10 @@ class OdecetOptionsFlow(OptionsFlow):
         )
 
     async def _available_mediums(self) -> tuple[list[str], str | None]:
+        session = async_create_clientsession(self.hass, auto_cleanup=False)
         try:
             readings = await OdecetClient(
-                async_get_clientsession(self.hass),
+                session,
                 self.config_entry.data[CONF_SIGNIN_URL],
                 self.config_entry.data[CONF_USERNAME],
                 self.config_entry.data[CONF_PASSWORD],
@@ -287,4 +293,6 @@ class OdecetOptionsFlow(OptionsFlow):
         except OdecetError as err:
             _LOGGER.debug("Options discovery failed: %s", err)
             return [], flow_error_key(err)
+        finally:
+            session.detach()
         return [medium.value for medium in readings.mediums()], None

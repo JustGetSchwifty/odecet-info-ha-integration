@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import logging
 import random
+from collections.abc import Callable
 from datetime import date, datetime, timedelta
 
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.event import async_track_point_in_time
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
@@ -29,6 +31,7 @@ from custom_components.odecet_info.const import (
     MAX_FAILURES,
     MIN_SYNC_INTERVAL,
 )
+from custom_components.odecet_info.entry import OdecetConfigEntry
 from custom_components.odecet_info.errors import OdecetAuthError, OdecetError
 from custom_components.odecet_info.models import FetchMethod, ReadingSet
 
@@ -38,7 +41,9 @@ _LOGGER = logging.getLogger(__name__)
 class OdecetCoordinator(DataUpdateCoordinator[ReadingSet]):
     """One account, one in-flight fetch, at most one attempt per minute."""
 
-    def __init__(self, hass: HomeAssistant, entry) -> None:
+    config_entry: OdecetConfigEntry
+
+    def __init__(self, hass: HomeAssistant, entry: OdecetConfigEntry) -> None:
         super().__init__(
             hass,
             _LOGGER,
@@ -46,7 +51,10 @@ class OdecetCoordinator(DataUpdateCoordinator[ReadingSet]):
             name=DOMAIN,
             update_interval=None,
         )
-        self._unsub_schedule = None
+        # Cookies stay on this session. Created during entry setup, so Home
+        # Assistant closes it when the entry unloads.
+        self.session = async_create_clientsession(hass)
+        self._unsub_schedule: Callable[[], None] | None = None
         self._last_attempt: datetime | None = None
         self.failures = 0
 
@@ -83,17 +91,23 @@ class OdecetCoordinator(DataUpdateCoordinator[ReadingSet]):
             result = await self._fetch()
         except OdecetAuthError as err:
             self.failures += 1
-            _LOGGER.warning("odecet.info rejected the saved account")
-            raise ConfigEntryAuthFailed(str(err)) from err
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN,
+                translation_key="auth_failed",
+            ) from err
         except OdecetError as err:
             self.failures += 1
-            _LOGGER.warning("odecet.info sync failed: %s", err)
             self._schedule_after_failure()
-            raise UpdateFailed(str(err)) from err
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="sync_failed",
+                translation_placeholders={"error": str(err)},
+            ) from err
         self.failures = 0
         ir.async_delete_issue(self.hass, DOMAIN, "sync_failed")
         self._schedule_daily()
         self._sync_unit_issues(result)
+        self._drop_stale_devices(result)
         return result
 
     async def _fetch(self) -> ReadingSet:
@@ -104,7 +118,7 @@ class OdecetCoordinator(DataUpdateCoordinator[ReadingSet]):
         sync_from = date.fromisoformat(raw_start) if raw_start else None
         method = FetchMethod(entry.options.get(CONF_FETCH_METHOD, FetchMethod.AUTO.value))
         client = OdecetClient(
-            async_get_clientsession(self.hass),
+            self.session,
             entry.data[CONF_SIGNIN_URL],
             entry.data[CONF_USERNAME],
             entry.data[CONF_PASSWORD],
@@ -170,9 +184,24 @@ class OdecetCoordinator(DataUpdateCoordinator[ReadingSet]):
             else:
                 ir.async_delete_issue(self.hass, DOMAIN, issue_id)
         registry = ir.async_get(self.hass)
-        for issue_id in list(registry.issues):
-            domain, parsed_id = issue_id
+        for (domain, parsed_id) in list(registry.issues):
             if domain != DOMAIN or not parsed_id.startswith("missing_unit_"):
                 continue
             if parsed_id not in active:
                 ir.async_delete_issue(self.hass, DOMAIN, parsed_id)
+
+    def _drop_stale_devices(self, result: ReadingSet) -> None:
+        """Remove meter devices that this successful fetch no longer returned."""
+        entry = self.config_entry
+        enabled = set(entry.options.get(CONF_MEDIUMS, []))
+        current = {
+            f"{entry.entry_id}_{meter.medium.value}_{meter.serial}"
+            for meter in result.meters()
+            if meter.medium.value in enabled
+        }
+        registry = dr.async_get(self.hass)
+        for device in dr.async_entries_for_config_entry(registry, entry.entry_id):
+            identifiers = {ident for domain, ident in device.identifiers if domain == DOMAIN}
+            if entry.entry_id in identifiers or not identifiers.isdisjoint(current):
+                continue
+            registry.async_remove_device(device.id)

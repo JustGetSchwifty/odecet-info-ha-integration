@@ -18,4 +18,5 @@ Follow current Home Assistant developer docs for config flows, coordinators, and
 - Import history with `async_import_statistics` onto the sensor entity (`source="recorder"`). Do not also publish an external statistic for the same consumption.
 - Statistics need `mean_type`, `unit_class`, and timestamps at the top of an hour with a timezone.
 - Diagnostics and repairs must not include the password, token, or cookies.
-- Use Home Assistant's shared `aiohttp` session via `async_get_clientsession`.
+- Give the client its own `aiohttp` session from `async_create_clientsession`. The login stores cookies, and the shared session would send them with other integrations. Create that session during config entry setup so Home Assistant closes it on unload. A config-flow probe uses `auto_cleanup=False` and closes the session before the step returns.
+- `custom_components/odecet_info/quality_scale.yaml` tracks the published quality-scale rules. A rule is `done` only when the code and a test exist. An exemption needs a `comment` that says why the rule cannot apply. Do not set manifest `quality_scale` above what that file supports. The platinum mark in the README is our assessment. Home Assistant core does not grade custom integrations.

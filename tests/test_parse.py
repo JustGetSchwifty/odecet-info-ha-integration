@@ -9,6 +9,7 @@ from custom_components.odecet_info.errors import OdecetStructureError
 from custom_components.odecet_info.models import Medium
 from custom_components.odecet_info.parse import (
     history_as_csv,
+    measurement_kind,
     normalize_unit,
     parse_csv,
     parse_history_html,
@@ -17,6 +18,16 @@ from tests.fakes import load_fixture
 
 PRAGUE = ZoneInfo("Europe/Prague")
 NOW = datetime(2026, 10, 6, 12, tzinfo=PRAGUE)
+
+
+def test_a_select_option_without_a_value_uses_its_text() -> None:
+    from custom_components.odecet_info.html_extract import parse_page
+
+    forms, _tables = parse_page(
+        '<form action="/p"><select name="year"><option selected>2024</option></select></form>'
+    )
+    assert forms[0].selects[0].options == ("2024",)
+    assert forms[0].selects[0].selected == "2024"
 
 
 def test_html_and_csv_agree_on_the_happy_path() -> None:
@@ -120,6 +131,35 @@ def test_empty_history_table_is_an_empty_set() -> None:
     """
     parsed = parse_history_html(html, now=NOW)
     assert parsed.readings == ()
+
+
+def test_measurement_kind_accepts_only_known_units() -> None:
+    assert measurement_kind("m³") == "volume"
+    assert measurement_kind("kWh") == "energy"
+    assert measurement_kind(None) is None
+    assert measurement_kind("buckets") is None
+
+
+def test_a_table_without_rows_is_empty() -> None:
+    html = '<table id="kt_ecommerce_report_customer_orders_table"></table>'
+    assert parse_history_html(html, now=NOW).readings == ()
+    with pytest.raises(OdecetStructureError):
+        parse_history_html("<p>no table</p>", now=NOW)
+    with pytest.raises(OdecetStructureError):
+        history_as_csv("<p>no table</p>")
+
+
+def test_csv_edge_cases() -> None:
+    with pytest.raises(OdecetStructureError):
+        parse_csv("   ", now=NOW)
+    text = (
+        "Typ měřiče;Výrobní číslo;Datum;Stav;Jednotka\n"
+        "Studená voda;;05.10.2026;1.234,56;m3\n"
+        "Studená voda;1001;05.10.2026;1,234.56;m3\n"
+    )
+    parsed = parse_csv(text, now=NOW)
+    assert any(issue.code == "missing_serial" for issue in parsed.issues)
+    assert parsed.readings[0].value == Decimal("1234.56")
 
 
 def test_unknown_unit_spellings() -> None:

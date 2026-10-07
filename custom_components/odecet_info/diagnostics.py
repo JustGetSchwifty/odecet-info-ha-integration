@@ -11,15 +11,16 @@ from custom_components.odecet_info.const import (
     CONF_MEDIUMS,
     CONF_SYNC_FROM,
 )
-from custom_components.odecet_info.coordinator import OdecetCoordinator
+from custom_components.odecet_info.entry import OdecetConfigEntry
 
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant,
-    entry,
+    entry: OdecetConfigEntry,
 ) -> dict[str, Any]:
     """Return meters, warnings, and the cooldown. Never the password."""
-    coordinator: OdecetCoordinator = entry.runtime_data
+    del hass
+    coordinator = entry.runtime_data
     data = coordinator.data
     meters = []
     issues = []

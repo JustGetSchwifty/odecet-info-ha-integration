@@ -8,8 +8,11 @@ Run this after a larger change, before treating that change as done.
 
 ```bash
 uv run ruff check custom_components tests
+uv run mypy
 uv run pytest
 ```
+
+`mypy` is strict for `custom_components/odecet_info`. `pytest` fails when coverage of that package drops below 95 percent. CI runs both, and it also runs every night and on demand so a new hassfest or HACS rule is caught without a push.
 
 `tests/test_publish.py` checks the tree for the hassfest and HACS failures that do not need GitHub: manifest key order, the recorder dependency, the integration brand icon, and a LICENSE file GitHub can identify as MIT. The same hassfest image CI uses can be run locally:
 

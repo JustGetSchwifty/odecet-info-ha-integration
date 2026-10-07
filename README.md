@@ -1,55 +1,116 @@
 # Odecet.info for Home Assistant
 
+<img src="https://raw.githubusercontent.com/JustGetSchwifty/odecet-info-ha-integration/main/custom_components/odecet_info/brand/logo@2x.png" alt="odecet.info" width="512">
+
 [![CI](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/JustGetSchwifty/odecet-info-ha-integration?display_name=tag)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases)
-[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5)](https://github.com/hacs/integration)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
 
-Unofficial Home Assistant integration that reads hot water, cold water, and heat meter history from [odecet.info](https://odecet.info) and exposes one meter sensor per device.
+odecet.info is a Czech website where a household account can read the history of its cold-water, hot-water, and heat meters. This unofficial integration signs in with that account and brings each meter's register into Home Assistant. It is not affiliated with odecet.info or the site's operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
-This project is not affiliated with odecet.info or its operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+The integration follows the published [Home Assistant quality scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/) rules through platinum, with the exemptions recorded in `custom_components/odecet_info/quality_scale.yaml`. Home Assistant does not review custom integrations, so that mark is our assessment against those rules, not a grade from the core team.
 
-## What it does
+## Supported meters
 
-- Signs in with your odecet.info account from **Settings → Devices & services → Add integration**.
-- Imports the measurement history, either from the CSV export or from the history table. You choose which one to use.
-- Creates one device and a **Reading** sensor for each meter. Types that are not on the account are not offered.
-- Syncs once a day in the background, at about 04:00 local time, with jitter. A failure retries with backoff and never sooner than one minute. After five failures it opens a repair and waits for the next day.
-- Adds a **Sync now** button. Manual and automatic syncs share a limit of one sync per minute. **Next manual sync** shows when the button will be available again.
-- Ignores readings older than the start date you set.
+A meter is supported when the signed-in account returns it. There is no separate hardware list.
+
+- Cold water (Studená voda). A unit labeled `m3` is stored as cubic metres.
+- Hot water (Teplá voda). Stored the same way.
+- Heat (Teplo). On the current site the heat unit is empty, so the sensor shows the raw register and is not added to statistics.
+
+A meter that later disappears from the account is removed from Home Assistant.
+
+## What you get
+
+- One device per meter, linked to an account device.
+- A **Reading** sensor with the latest register.
+- A **Sync now** button on the account device.
+- A **Next manual sync** sensor that shows when that button is allowed again.
+- Imported history for sensors whose unit is known, so water can be added to the Energy dashboard.
+
+## How readings are updated
+
+The integration reads the site once a day, at about 04:00 local time, plus a random delay of up to 30 minutes. It does not poll every minute. A failed read retries with backoff and never more often than once a minute. After five failures it opens a repair and waits until the next day. **Sync now** uses the same one-minute limit.
 
 ## Install
 
-The integration is not in the default HACS catalog.
+The integration is not in the default HACS catalog. Home Assistant must be **2025.11.0** or newer. HACS refuses the release on an older version.
 
-1. Install [HACS](https://www.hacs.xyz/docs/use/download/download/).
-2. In HACS, open the three-dot menu and choose **Custom repositories**.
-3. Add `https://github.com/JustGetSchwifty/odecet-info-ha-integration` as an **Integration**.
-4. Download **Odecet.info**.
-5. Restart Home Assistant.
+1. Install [HACS](https://www.hacs.xyz/docs/use/download/download/) and finish its setup, including the GitHub device login, so HACS appears in the sidebar.
+2. Open HACS. In the top-right menu, choose **Custom repositories**.
+3. Add `https://github.com/JustGetSchwifty/odecet-info-ha-integration`, set the type to **Integration**, and press **Add**. Adding the address does not download the integration.
+4. Search for **Odecet.info**, open it, and press **Download**. Leave the newest release selected.
+5. Restart Home Assistant if HACS shows **Pending restart**. An update needs that restart. The first download is often loaded without one.
 6. Go to **Settings → Devices & services → Add integration**, search for **Odecet.info**, and enter the account.
 
-## Configure
+You can open this repository in HACS with the badge above.
 
-| Setting | Where | Purpose |
-| --- | --- | --- |
-| Sign-in URL | Setup | Page that contains the login form. The default is `https://odecet.info/signin`. |
-| Username and password | Setup | The account email and password. Stored in the config entry, not in YAML. |
-| Meters | Setup | Hot water, cold water, and heat. Only types found on the account can be selected. |
-| Fetch method | Options | `Auto` tries CSV export, then the history table. `CSV` or `Table` forces one method. |
-| Sync from | Options | Readings before this date are ignored. Empty means the full history that the site returns. |
+## Setup
+
+The first screen asks for:
+
+| Field | Purpose |
+| --- | --- |
+| Email | The address used on the odecet.info sign-in page. |
+| Password | Stored in the Home Assistant config entry. It is not written to logs. |
+| Sign-in URL | The page that contains the login form. The default is `https://odecet.info/signin`. |
+
+The second screen asks for:
+
+| Field | Purpose |
+| --- | --- |
+| Meters | Cold water, hot water, and heat. Only types found on the account can be selected. Readings for types you leave out are ignored. |
+| How to read the history | **Auto (CSV, then table)** tries the CSV export first, then the history table. **CSV export** or **History table** forces one method. |
+| Sync from | Readings before this date are ignored. Leave it empty to keep the history the site returns. |
+
+The same three fields can be changed later: **Settings → Devices & services → Odecet.info → Configure**.
 
 After setup, the account device shows **Sync now** and **Next manual sync**. Each meter is its own device with a **Reading** sensor.
 
 Water readings labeled `m3` are stored as cubic metres and can be added to the Energy dashboard as water. If the site does not send a unit, which is the case for heat on the current pages, the sensor shows the raw register, a repair explains why, and the value is not written to statistics. The integration does not guess a unit.
 
+## Use
+
+Follow a flat's water registers in Home Assistant and on the Energy dashboard. A repair opens when the daily read keeps failing, or when heat arrives without a unit.
+
+Notify when a meter has been unavailable for an hour. Replace the entity id with the sensor from your account.
+
+```yaml
+alias: Odecet.info meter unavailable
+triggers:
+  - trigger: state
+    entity_id: sensor.cold_water_SERIAL_reading
+    to: unavailable
+    for:
+      hours: 1
+actions:
+  - action: notify.persistent_notification
+    data:
+      title: odecet.info
+      message: A meter has been unavailable for an hour.
+```
+
+## Limitations
+
+- The integration is unofficial.
+- A change to the site's login or history page can break sync until the integration is updated.
+- Heat on the current site has no unit. The value stays a raw number, a repair explains why, and it is not written to statistics. The integration does not guess a unit.
+- Automatic and manual sync share a limit of one request per minute.
+- Readings before **Sync from** are ignored. The site also limits how much history it returns.
+- There is no local connection to a meter. The account has to be able to sign in on the website.
+
+## Remove
+
+**Settings → Devices & services → Odecet.info**, open the menu, and choose **Delete**. To drop the download as well, remove the repository in HACS and restart Home Assistant.
+
 ## Debug
 
-- **Settings → System → Logs**, filter for `odecet_info`. Failed logins, unrecognized pages, and skipped rows are logged there without the password.
+- **Settings → System → Logs**, filter for `odecet_info`. A failed read is logged once when it starts and once when it recovers. The password is not logged.
 - A repair issue is raised when a meter has no recognizable unit, or when daily sync keeps failing.
 - **Settings → Devices & services → Odecet.info → Download diagnostics** lists meters, warnings, and the last sync result. It does not include the password or session cookies.
-- If the site layout changes, the CSV path is the more stable one. Switch the fetch method in the integration options and sync again.
+- If the site layout changes, the CSV path is the more stable one. Switch **How to read the history** under **Configure** and sync again.
 
 ## Develop
 

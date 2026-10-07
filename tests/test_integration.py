@@ -4,13 +4,18 @@ from datetime import timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from custom_components.odecet_info import async_remove_config_entry_device
 from custom_components.odecet_info.button import SyncNowButton
 from custom_components.odecet_info.const import DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
 from custom_components.odecet_info.diagnostics import async_get_config_entry_diagnostics
-from custom_components.odecet_info.errors import OdecetTransportError
-from homeassistant.exceptions import HomeAssistantError
+from custom_components.odecet_info.errors import OdecetAuthError, OdecetTransportError
+from custom_components.odecet_info.sensor import MeterSensor
+from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from tests.samples import sample_readings
@@ -140,3 +145,76 @@ async def test_repeated_failures_open_a_repair(hass, enable_custom_integrations)
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "sync_failed")
     assert issue is not None
     assert issue.translation_placeholders["attempts"] == "5"
+
+
+@pytest.mark.asyncio
+async def test_fetch_uses_a_dedicated_session(hass, enable_custom_integrations) -> None:
+    entry = _entry()
+    entry.add_to_hass(hass)
+    with _patch_fetch(sample_readings()):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    coordinator = entry.runtime_data
+    assert coordinator.session is not async_get_clientsession(hass)
+
+
+@pytest.mark.asyncio
+async def test_a_meter_that_disappears_is_removed(hass, enable_custom_integrations) -> None:
+    entry = _entry(mediums=["cold_water", "heat"])
+    entry.add_to_hass(hass)
+    with _patch_fetch(sample_readings()):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    registry = dr.async_get(hass)
+    heat_id = f"{entry.entry_id}_heat_1003"
+    assert registry.async_get_device(identifiers={(DOMAIN, heat_id)}) is not None
+
+    with _patch_fetch(sample_readings(heat=False)):
+        await entry.runtime_data.async_refresh()
+        await hass.async_block_till_done()
+
+    assert registry.async_get_device(identifiers={(DOMAIN, heat_id)}) is None
+    account = registry.async_get_device(identifiers={(DOMAIN, entry.entry_id)})
+    assert account is not None
+    assert await async_remove_config_entry_device(hass, entry, account) is False
+    cold = registry.async_get_device(identifiers={(DOMAIN, f"{entry.entry_id}_cold_water_1001")})
+    assert cold is not None
+    assert await async_remove_config_entry_device(hass, entry, cold) is False
+    with _patch_fetch(sample_readings(heat=False)):
+        hass.config_entries.async_update_entry(
+            entry, options={**entry.options, "fetch_method": "csv"}
+        )
+        await hass.async_block_till_done()
+
+
+@pytest.mark.asyncio
+async def test_a_failed_sync_is_logged_once(hass, caplog, enable_custom_integrations) -> None:
+    caplog.set_level("ERROR", logger="custom_components.odecet_info.coordinator")
+    entry = _entry()
+    entry.add_to_hass(hass)
+    coordinator = OdecetCoordinator(hass, entry)
+    with patch.object(coordinator, "_fetch", side_effect=OdecetTransportError("down")):
+        await coordinator.async_refresh()
+        await coordinator.async_refresh()
+    errors = [record for record in caplog.records if record.levelname == "ERROR"]
+    assert len(errors) == 1
+    assert "odecet_info" in errors[0].message
+    assert coordinator.manual_sync_allowed is False
+    fresh = OdecetCoordinator(hass, entry)
+    assert fresh.manual_sync_allowed is True
+    assert fresh.cooldown_seconds == 0
+    fresh.config_entry = None  # type: ignore[assignment]
+    with pytest.raises(UpdateFailed):
+        await fresh._fetch()
+    with pytest.raises(ConfigEntryAuthFailed):
+        with patch.object(coordinator, "_fetch", side_effect=OdecetAuthError("no")):
+            await coordinator._async_update_data()
+    await coordinator._handle_scheduled(dt_util.utcnow())
+    meter = sample_readings().meters()[0]
+    sensor = MeterSensor(coordinator, meter, "uid", None)
+    coordinator.data = None
+    assert sensor.available is False
+    assert sensor.native_value is None
+    assert sensor.native_unit_of_measurement is None
+    assert sensor.device_class is None
+    assert sensor.extra_state_attributes == {}

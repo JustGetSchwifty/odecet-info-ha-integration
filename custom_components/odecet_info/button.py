@@ -11,13 +11,14 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from custom_components.odecet_info.const import DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
+from custom_components.odecet_info.entry import OdecetConfigEntry
 
 PARALLEL_UPDATES = 0
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry,
+    entry: OdecetConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Add the account-level sync button."""
@@ -28,7 +29,7 @@ class SyncNowButton(CoordinatorEntity[OdecetCoordinator], ButtonEntity):
     """Ask for a sync now, unless the last attempt was less than a minute ago."""
 
     _attr_has_entity_name = True
-    _attr_name = "Sync now"
+    _attr_translation_key = "sync_now"
 
     def __init__(self, coordinator: OdecetCoordinator) -> None:
         super().__init__(coordinator)
@@ -55,6 +56,8 @@ class SyncNowButton(CoordinatorEntity[OdecetCoordinator], ButtonEntity):
         if not self.coordinator.manual_sync_allowed:
             remaining = self.coordinator.cooldown_seconds
             raise HomeAssistantError(
-                f"Manual sync is limited to once a minute. {remaining} seconds remaining."
+                translation_domain=DOMAIN,
+                translation_key="sync_cooldown",
+                translation_placeholders={"seconds": str(remaining)},
             )
         await self.coordinator.async_request_refresh()

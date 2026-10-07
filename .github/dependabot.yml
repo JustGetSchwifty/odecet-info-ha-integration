@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      python:
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
+    ignore:
+      # These refs are branches on purpose. The publisher docs use them so the
+      # checks follow Home Assistant and HACS, and a pin would freeze that.
+      - dependency-name: home-assistant/actions/hassfest
+      - dependency-name: hacs/action

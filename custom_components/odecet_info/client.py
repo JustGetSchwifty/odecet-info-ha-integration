@@ -1,7 +1,8 @@
 """HTTP client for odecet.info.
 
-The session is injected so Home Assistant can pass its shared client and tests
-can pass a fake. This module does not import Home Assistant.
+The session is injected. Home Assistant passes a dedicated client so the
+login cookies stay off the shared session, and tests pass a fake. This
+module does not import Home Assistant.
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ from custom_components.odecet_info.errors import (
 )
 from custom_components.odecet_info.html_extract import (
     HtmlForm,
+    SelectField,
     is_sign_in_page,
     parse_page,
 )
@@ -238,7 +240,7 @@ def _period_params(form: HtmlForm, start: date, end: date) -> dict[str, str]:
     return params
 
 
-def _select(form: HtmlForm, name: str):
+def _select(form: HtmlForm, name: str) -> SelectField | None:
     for select in form.selects:
         if select.name == name:
             return select
