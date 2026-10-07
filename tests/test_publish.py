@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import ast
 import json
+import os
+import re
 from pathlib import Path
 
 from dev.check_github_metadata import valid_topics
@@ -145,24 +147,66 @@ QUALITY_RULES = {
 }
 
 
-USER_DOC_PAIRS = (
-    (ROOT / "README.md", ROOT / "docs" / "cs" / "README.md"),
-    (ROOT / "CHANGELOG.md", ROOT / "docs" / "cs" / "CHANGELOG.md"),
-    (ROOT / "docs" / "heat-cost-allocation.md", ROOT / "docs" / "cs" / "heat-cost-allocation.md"),
-)
+_PLACEHOLDER = re.compile(r"\{([a-zA-Z0-9_]+)\}")
+
+
+def _english_docs() -> list[Path]:
+    pages = [ROOT / "README.md", ROOT / "CHANGELOG.md"]
+    pages.extend(sorted((ROOT / "docs").glob("*.md")))
+    return pages
+
+
+def _czech_doc(english: Path) -> Path:
+    return ROOT / "docs" / "cs" / english.name
+
+
+def _headings(text: str) -> int:
+    return sum(1 for line in text.splitlines() if line.startswith("#"))
 
 
 def test_user_docs_have_a_czech_twin() -> None:
-    """A user-facing English page is not done until docs/cs has the same page."""
-    for english, czech in USER_DOC_PAIRS:
-        assert english.is_file(), english
+    """Every English user page has a Czech twin, and each page links to the other."""
+    for english in _english_docs():
+        czech = _czech_doc(english)
         assert czech.is_file(), czech
-        assert len(czech.read_text(encoding="utf-8").strip()) > 200
+        english_text = english.read_text(encoding="utf-8")
+        czech_text = czech.read_text(encoding="utf-8")
+        assert _headings(czech_text) >= _headings(english_text), czech
+        for page, other in ((english, czech), (czech, english)):
+            text = page.read_text(encoding="utf-8")
+            first = text.lstrip().splitlines()[0]
+            assert "English" in first and "Čeština" in first, page
+            relative = Path(os.path.relpath(other, page.parent)).as_posix()
+            assert f"]({relative})" in text, page
     heat_en = (ROOT / "docs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
     heat_cs = (ROOT / "docs" / "cs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
     assert "$$" in heat_en and "$$" in heat_cs
     assert "scale unit" in heat_en.casefold()
     assert "dílek" in heat_cs.casefold()
+
+
+def _leaf_strings(value: object, prefix: str = "") -> dict[str, str]:
+    if isinstance(value, dict):
+        leaves: dict[str, str] = {}
+        for key, item in value.items():
+            path = f"{prefix}.{key}" if prefix else key
+            leaves.update(_leaf_strings(item, path))
+        return leaves
+    if isinstance(value, str):
+        return {prefix: value}
+    return {}
+
+
+def test_czech_translations_cover_every_english_string() -> None:
+    """A new English UI string is not done until the Czech file has the same key."""
+    english = json.loads((INTEGRATION / "strings.json").read_text(encoding="utf-8"))
+    czech = json.loads((INTEGRATION / "translations" / "cs.json").read_text(encoding="utf-8"))
+    english_leaves = _leaf_strings(english)
+    czech_leaves = _leaf_strings(czech)
+    missing = sorted(set(english_leaves) - set(czech_leaves))
+    assert not missing, missing
+    for key, text in english_leaves.items():
+        assert set(_PLACEHOLDER.findall(text)) == set(_PLACEHOLDER.findall(czech_leaves[key])), key
 
 
 def test_english_translations_match_strings() -> None:

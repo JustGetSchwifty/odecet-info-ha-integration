@@ -9,7 +9,9 @@ alwaysApply: true
 
 Write code, identifiers, comments, docstrings, log messages, skills, rules, and commit messages in English.
 
-User-facing pages have an English original and a Czech twin. Update both in the same change: `README.md` with `docs/cs/README.md`, `CHANGELOG.md` with `docs/cs/CHANGELOG.md`, and `docs/heat-cost-allocation.md` with `docs/cs/heat-cost-allocation.md`. Keep `translations/en.json` equal to `strings.json`, and update `translations/cs.json` when those strings change. Developer docs stay English. Do not ship one language without the other.
+Every user document has an English original and a Czech twin. Update both in the same change. That is `README.md`, `CHANGELOG.md`, and every `docs/*.md` page, each with the same filename under `docs/cs/`. The first line of both pages links to the other language. The Czech page covers the same sections. Do not ship one language without the other.
+
+Keep `translations/en.json` equal to `strings.json`. Translate every new English string in `translations/cs.json` in that same change, including device names and selector labels.
 
 ## Secrets
 
@@ -24,10 +26,11 @@ The deploy key path is `.private/deploy`. Reference the path only. Do not copy t
 If you change behavior, the website contract, scheduling, entity model, or how to run tests, update the matching doc in the same change:
 
 - `README.md` and `docs/cs/README.md` — what it is, install, configure, debug
-- `docs/architecture.md` — structure and data flow
-- `docs/website-contract.md` — login, export, columns, units
-- `docs/challenges.md` — problems found and how they were solved
-- `docs/testing.md` — tier 1 and tier 2
+- `docs/architecture.md` and `docs/cs/architecture.md` — structure and data flow
+- `docs/website-contract.md` and `docs/cs/website-contract.md` — login, export, columns, units
+- `docs/challenges.md` and `docs/cs/challenges.md` — problems found and how they were solved
+- `docs/testing.md` and `docs/cs/testing.md` — tier 1 and tier 2
+- `docs/heat-cost-allocation.md` and `docs/cs/heat-cost-allocation.md` — what the heat reading is
 - `AGENTS.md` and `.cursor/rules/` when the working agreement changes
 
 Do not leave docs describing a previous design.
