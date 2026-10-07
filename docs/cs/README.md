@@ -10,9 +10,7 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
 [![Stars](https://img.shields.io/github/stars/JustGetSchwifty/odecet-info-ha-integration)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/stargazers)
 
-<p align="center">
-  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration"><img alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." src="https://my.home-assistant.io/badges/hacs_repository.svg"></a>
-</p>
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration)
 
 odecet.info je český web, na kterém domácí účet vidí historii studené vody, teplé vody a topení. Tato neoficiální integrace se tím účtem přihlásí a přenese stav každého měřidla do Home Assistantu. S provozovatelem webu není spojená. Web se může změnit nebo přístup zastavit. Viz [LICENSE](../../LICENSE) a [NOTICE](../../NOTICE).
 

@@ -10,9 +10,7 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
 [![Stars](https://img.shields.io/github/stars/JustGetSchwifty/odecet-info-ha-integration)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/stargazers)
 
-<p align="center">
-  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration"><img alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." src="https://my.home-assistant.io/badges/hacs_repository.svg"></a>
-</p>
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration)
 
 odecet.info is a Czech website where a household account can read the history of its cold-water, hot-water, and heat meters. This unofficial integration signs in with that account and brings each meter's register into Home Assistant. It is not affiliated with odecet.info or the site's operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
 
