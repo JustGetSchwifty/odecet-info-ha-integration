@@ -15,7 +15,9 @@ Observed on 6 October 2026 against the live site. The capture used to confirm th
 | Account field | `email` |
 | Secret field | `password` |
 | Honeypot | `website`, must be posted empty |
-| Cookies | Keep the jar from the GET, including `ARRAffinity` |
+| Cookies | Keep the jar for this sign-in only, including `ARRAffinity` |
+
+`ARRAffinity` sticks the browser to one server. It is not a login that lasts for months. The form has no remember-me field, so a Netscape `cookies.txt` export would expire with the browser session. Do not add a cookie sign-in unless a later capture shows an authentication cookie with a long `Expires` or `Max-Age`.
 
 Any other 200 body is invalid credentials. HTTP 429 is rate limiting. Timeouts and HTTP 5xx are transport failures. A missing token means the page structure changed.
 

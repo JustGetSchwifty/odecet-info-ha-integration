@@ -1,0 +1,43 @@
+name: Merge Dependabot
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Squash-merge a green Dependabot pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const branch = context.payload.workflow_run.head_branch;
+            const { data: pulls } = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: "open",
+              head: `${owner}:${branch}`,
+            });
+            for (const pull of pulls) {
+              if (pull.user.login !== "dependabot[bot]") {
+                continue;
+              }
+              await github.rest.pulls.merge({
+                owner,
+                repo,
+                pull_number: pull.number,
+                merge_method: "squash",
+              });
+              core.info(`Merged #${pull.number}`);
+            }

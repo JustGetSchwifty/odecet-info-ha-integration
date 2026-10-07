@@ -26,10 +26,9 @@ Update `CHANGELOG.md` in that same commit, without asking. English only. Newest 
 
 ## Publish
 
-A minor or patch bump is not done until both of these exist:
+A minor or patch bump is not done until the annotated tag `vX.Y.Z` is on GitHub. The `v` prefix is required. The manifest and `version.json` stay without it.
 
-- an annotated tag `vX.Y.Z` (the `v` prefix is required; the manifest and `version.json` stay without it)
-- a GitHub Release on that tag whose body is the changelog section
+Pushing that tag runs `.github/workflows/release.yml`. The workflow reads the matching `CHANGELOG.md` section and creates or updates the GitHub Release with `make_latest` true. Do not publish the release by hand, and do not leave the previous release marked latest. A tag that contains `-rc` is not published.
 
 HACS installs the latest GitHub Release, not `main`. A tag with no release does not count. Do not set `zip_release` in `hacs.json`; HACS can download the tag archive.
 

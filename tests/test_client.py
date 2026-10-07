@@ -75,6 +75,19 @@ async def test_csv_and_table_modes_both_return_meters() -> None:
 
 
 @pytest.mark.asyncio
+async def test_empty_sync_from_requests_the_earliest_year() -> None:
+    session = _session(
+        (200, load_fixture("signin.html")),
+        (200, "True"),
+        (200, load_fixture("dashboard.html")),
+        (200, load_fixture("dashboard.html")),
+    )
+    await _client(session).async_fetch(FetchMethod.TABLE, now=NOW)
+    assert session.calls[3]["params"]["fromYear"] == "2024"
+    assert session.calls[3]["params"]["fromMonth"] == "1"
+
+
+@pytest.mark.asyncio
 async def test_sync_from_drops_older_readings() -> None:
     session = _session(
         (200, load_fixture("signin.html")),

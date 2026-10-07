@@ -1,0 +1,20 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: ${{ !contains(github.ref_name, '-rc') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish the GitHub Release as latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 dev/publish_release.py "${GITHUB_REF_NAME}"

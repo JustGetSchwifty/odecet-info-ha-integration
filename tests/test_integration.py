@@ -70,6 +70,8 @@ async def test_sensors_statistics_and_disabled_medium(hass, enable_custom_integr
 
     metadata = imported.call_args.args[1]
     points = imported.call_args.args[2]
+    assert len(points) == 2
+    assert points[0]["start"] != points[1]["start"]
     assert metadata["source"] == "recorder"
     assert metadata["statistic_id"] == cold.entity_id
     assert metadata["unit_class"] == "volume"
@@ -86,6 +88,8 @@ async def test_sensors_statistics_and_disabled_medium(hass, enable_custom_integr
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
     assert "secret-value" not in str(diagnostics)
     assert diagnostics["meters"][0]["serial"] == "1001"
+    assert diagnostics["meters"][0]["oldest_at"]
+    assert diagnostics["meters"][0]["statistic_points"] == 2
 
 
 @pytest.mark.asyncio
@@ -145,6 +149,20 @@ async def test_repeated_failures_open_a_repair(hass, enable_custom_integrations)
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "sync_failed")
     assert issue is not None
     assert issue.translation_placeholders["attempts"] == "5"
+
+
+@pytest.mark.asyncio
+async def test_sync_from_is_passed_to_the_client(hass, enable_custom_integrations) -> None:
+    entry = _entry()
+    entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(
+        entry, options={**entry.options, "sync_from": "2026-10-06"}
+    )
+    with _patch_fetch(sample_readings()) as client_cls:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    sync_from = client_cls.return_value.async_fetch.await_args.args[1]
+    assert sync_from.isoformat() == "2026-10-06"
 
 
 @pytest.mark.asyncio

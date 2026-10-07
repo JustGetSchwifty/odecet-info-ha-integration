@@ -34,6 +34,8 @@ A meter that later disappears from the account is removed from Home Assistant.
 
 The integration reads the site once a day, at about 04:00 local time, plus a random delay of up to 30 minutes. It does not poll every minute. A failed read retries with backoff and never more often than once a minute. After five failures it opens a repair and waits until the next day. **Sync now** uses the same one-minute limit.
 
+The number on the sensor is the latest register. The history graph on the entity page draws the states Home Assistant has seen since the entity was created, and that graph opens on about the last day. Older registers are stored as hourly long-term statistics. The Energy dashboard, and a statistics graph whose period is an hour or longer, read that series. Diagnostics list `oldest_at`, `latest_at`, and `statistic_points` for each meter, which is the span that was imported. Heat without a unit is still left out of statistics.
+
 ## Install
 
 The integration is not in the default HACS catalog. Home Assistant must be **2025.11.0** or newer. HACS refuses the release on an older version.
@@ -121,6 +123,16 @@ uv run pytest
 docker compose -f dev/docker-compose.yml up -d --build
 uv run python dev/bootstrap_ha.py --local
 ```
+
+`dev/inspect_account.py` signs in with `.env` and downloads readings without starting Home Assistant. It prints each meter's span. It does not print the password.
+
+```bash
+uv run python dev/inspect_account.py login
+uv run python dev/inspect_account.py fetch --method auto
+uv run python dev/inspect_account.py fetch --method csv --sync-from 2024-01-01 --json /tmp/odecet.json --csv /tmp/odecet.csv
+```
+
+`--method` is `auto`, `csv`, or `table`. The JSON and CSV files are for you. Do not commit them.
 
 ## License
 

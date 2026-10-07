@@ -31,6 +31,8 @@ The suite covers:
 
 Fixtures in `tests/fixtures/` are synthetic. Live captures stay in gitignored `dev/capture/`.
 
+`dev/inspect_account.py` is the live counterpart. It uses `.env`, prints the span of each meter, and can write JSON or CSV. Tests for it use the scripted session and never call the site.
+
 ## Tier 2 before a push
 
 HACS downloads GitHub. A commit that is only on this machine is not in that download, so the pre-push check copies `custom_components/odecet_info` into the container config and restarts Home Assistant. That copy is a local install, not a HACS install.

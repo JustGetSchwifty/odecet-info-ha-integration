@@ -15,7 +15,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
       - run: uv python install 3.13
       - run: uv sync --frozen
-      - run: uv run ruff check custom_components tests dev/check_github_metadata.py
+      - run: uv run ruff check custom_components tests dev/check_github_metadata.py dev/inspect_account.py dev/publish_release.py
       - run: uv run mypy
       - run: uv run pytest
       - name: Check GitHub topics and license

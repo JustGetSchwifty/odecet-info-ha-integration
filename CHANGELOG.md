@@ -6,6 +6,21 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.2.1] - 2026-10-07
+
+The history graph on the entity shows states recorded since the meter was added. Older registers were already imported as statistics, and that was easy to miss.
+
+### Added
+
+- Diagnostics now include the oldest reading, the newest reading, and how many hourly statistic points were imported.
+- `dev/inspect_account.py` signs in with `.env` and can write the readings as JSON or CSV.
+- A tag `v*` publishes its changelog section as the latest GitHub Release.
+- Green Dependabot pull requests are squash-merged. Pull requests from anyone else are left alone.
+
+### Why
+
+A one-day history graph looked like the download had no past. The span is now visible, and releases and dependency updates no longer wait on a manual click.
+
 ## [0.2.0] - 2026-10-07
 
 The integration now follows the published Home Assistant quality-scale rules through platinum, as far as a website login allows.
@@ -40,5 +55,6 @@ First recorded release of the unofficial odecet.info integration.
 
 Users need a version they can install through HACS. Recording one 0.1.4 avoids pretending that 0.1.1 through 0.1.3 were released.
 
+[0.2.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.1
 [0.2.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.0
 [0.1.4]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.1.4
