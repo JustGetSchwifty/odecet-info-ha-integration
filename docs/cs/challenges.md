@@ -30,7 +30,7 @@ Formulář nástěnky potřebuje skrytou hodnotu `flat` ze stránky toho účtu.
 
 ## Kontroly publikování
 
-HACS hledá `custom_components/odecet_info/brand/icon.png`. Adresář `brand/` v kořeni repozitáře tu kontrolu nesplní. Tmavý motiv hledá taky `dark_icon.png` a `dark_icon@2x.png`. Ty dva soubory jsou kopie světlých ikon.
+HACS hledá `custom_components/odecet_info/brand/icon.png`. Adresář `brand/` v kořeni repozitáře tu kontrolu nesplní a ten zbylý adresář je pryč. Home Assistant 2026.3 a novější zobrazuje `dark_icon.png` a `dark_icon@2x.png` ze složky integrace. Ty dva soubory jsou kopie světlých ikon. Panel HACS pořád žádá `https://brands.home-assistant.io/_/odecet_info/dark_icon.png`. To CDN vlastní ikony integrací nenese, takže seznam HACS dál hlásí chybějící ikonu, dokud HACS sám nezačne číst místní soubory.
 
 Rozpoznání licence na GitHubu vrátí SPDX `NOASSERTION`, když má text MIT navíc část s upozorněním. HACS pak repozitář odmítne. Upozornění je v `NOTICE`. `LICENSE` zůstává text MIT.
 

@@ -30,7 +30,7 @@ The dashboard form needs the hidden `flat` value from that account's page. The i
 
 ## Publish checks
 
-HACS looks for `custom_components/odecet_info/brand/icon.png`. A `brand/` directory at the repository root does not satisfy that check. A dark theme also looks for `dark_icon.png` and `dark_icon@2x.png`. Those two files are copies of the light icons.
+HACS looks for `custom_components/odecet_info/brand/icon.png`. A `brand/` directory at the repository root does not satisfy that check, and that leftover directory has been removed. Home Assistant 2026.3 and newer serves `dark_icon.png` and `dark_icon@2x.png` from the integration folder. Those two files are copies of the light icons. The HACS panel still requests `https://brands.home-assistant.io/_/odecet_info/dark_icon.png`. That CDN does not carry custom integrations, so the HACS list keeps saying the icon is missing until HACS itself reads the local files.
 
 GitHub license detection returns SPDX `NOASSERTION` when the MIT text has an extra disclaimer section. HACS then rejects the repository. The disclaimer lives in `NOTICE`. `LICENSE` stays the MIT text.
 
