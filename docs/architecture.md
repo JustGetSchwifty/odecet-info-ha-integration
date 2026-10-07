@@ -1,3 +1,5 @@
+[English](architecture.md) | [Čeština](cs/architecture.md)
+
 # Architecture
 
 The integration is one Home Assistant config entry per odecet.info account. Code that talks to the site does not import Home Assistant, so the parser tests run without it.
@@ -38,7 +40,7 @@ The manual button and the schedule share `last_attempt`. While that timestamp is
 
 ## Entities
 
-The account device is created before any meter device. Each meter is its own device, linked with `via_device`, because a meter that points at a missing device is rejected.
+The account device is created before any meter device. Each meter is its own device, linked with `via_device`, because a meter that points at a missing device is rejected. The meter device name is translated: `Heat [S/N {serial}]` in English and `Teplo [číslo {serial}]` in Czech. The account device keeps the email as its name.
 
 Water with `m³` or `L` is `device_class: water` and `state_class: total_increasing`. Heat with an empty unit is `scale units` and `total_increasing`, with no energy device class, so it stays off the Energy dashboard. Its hourly history is still imported. Heat that arrives with `kWh` or `GJ` is `device_class: energy`. A water meter with no unit stays a raw number and raises a repair.
 

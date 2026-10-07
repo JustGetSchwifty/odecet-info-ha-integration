@@ -1,6 +1,6 @@
-# What the heat reading is
+[English](heat-cost-allocation.md) | [Čeština](cs/heat-cost-allocation.md)
 
-[English](heat-cost-allocation.md) · [Čeština](cs/heat-cost-allocation.md)
+# What the heat reading is
 
 The number odecet.info shows for heat is not a quantity of energy. It is the raw counter of an **electronic heat cost allocator** mounted on a radiator, built to EN 834. This page follows that reading from the temperature impulse on the radiator through the allocation coefficients to joules and kilowatt-hours. Home Assistant only receives the first step, the raw scale units.
 

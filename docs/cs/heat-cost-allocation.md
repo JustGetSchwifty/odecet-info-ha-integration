@@ -1,6 +1,6 @@
-# Co vlastně ukazuje topení
+[English](../heat-cost-allocation.md) | [Čeština](heat-cost-allocation.md)
 
-[English](../heat-cost-allocation.md) · [Čeština](heat-cost-allocation.md)
+# Co vlastně ukazuje topení
 
 Tento přehled přináší ucelený technický a matematický popis celého řetězce rozúčtování tepla v bytových domech s centrální otopnou soustavou – od fyzikálního vzniku impulsu na radiátoru přes normalizační koeficienty až po finální přepočet na jouly a kilowatthodiny. Home Assistant z odecet.info dostane jen první krok, surové dílky.
 

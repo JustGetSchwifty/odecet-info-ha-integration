@@ -1,3 +1,5 @@
+[English](CHANGELOG.md) | [Čeština](docs/cs/CHANGELOG.md)
+
 # Changelog
 
 All notable changes to this project are documented in this file.

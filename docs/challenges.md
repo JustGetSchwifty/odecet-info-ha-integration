@@ -1,3 +1,5 @@
+[English](challenges.md) | [Čeština](cs/challenges.md)
+
 # Challenges
 
 ## Sign-in is an HTML form, not an API

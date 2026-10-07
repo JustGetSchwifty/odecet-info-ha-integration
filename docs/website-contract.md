@@ -1,3 +1,5 @@
+[English](website-contract.md) | [Čeština](cs/website-contract.md)
+
 # odecet.info website contract
 
 Observed on 6 October 2026 against the live site. The capture used to confirm this lives in gitignored `dev/capture/`. Fixtures in `tests/fixtures/` copy the shape with invented values.

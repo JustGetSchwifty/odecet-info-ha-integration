@@ -1,6 +1,6 @@
-# Odecet.info for Home Assistant
+[English](README.md) | [Čeština](docs/cs/README.md)
 
-[English](README.md) · [Čeština](docs/cs/README.md)
+# Odecet.info for Home Assistant
 
 <img src="https://raw.githubusercontent.com/JustGetSchwifty/odecet-info-ha-integration/main/custom_components/odecet_info/brand/logo@2x.png" alt="odecet.info" width="512">
 
@@ -11,6 +11,8 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
 
 odecet.info is a Czech website where a household account can read the history of its cold-water, hot-water, and heat meters. This unofficial integration signs in with that account and brings each meter's register into Home Assistant. It is not affiliated with odecet.info or the site's operator. The site can change or block access at any time. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+User documentation and the Home Assistant screens are kept in English and Czech together. A change to one language is not done until the other language has the same change.
 
 The integration follows the published [Home Assistant quality scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/) rules through platinum, with the exemptions recorded in `custom_components/odecet_info/quality_scale.yaml`. Home Assistant does not review custom integrations, so that mark is our assessment against those rules, not a grade from the core team.
 
@@ -26,8 +28,8 @@ A meter that later disappears from the account is removed from Home Assistant.
 
 ## What you get
 
-- One device per meter, linked to an account device.
-- A **Reading** sensor with the latest register.
+- One device per meter, linked to an account device. The device is named `Heat [S/N 39584888]` in English. Czech Home Assistant shows `Teplo [číslo 39584888]`. Cold water and hot water use the same pattern.
+- A **Reading** sensor with the latest register. In Czech the sensor is **Stav**.
 - A **Sync now** button on the account device.
 - A **Next manual sync** sensor that shows when that button is allowed again.
 - Imported history for sensors whose unit is known, so water can be added to the Energy dashboard.
@@ -71,13 +73,13 @@ The second screen asks for:
 
 The same three fields can be changed later: **Settings → Devices & services → Odecet.info → Configure**.
 
-After setup, the account device shows **Sync now** and **Next manual sync**. Each meter is its own device with a **Reading** sensor.
+After setup, the account device shows **Sync now** and **Next manual sync**. Each meter is its own device, named with the medium and the serial in brackets, and a **Reading** sensor.
 
 Water readings labeled `m3` are stored as cubic metres and can be added to the Energy dashboard as water. Heat with an empty unit is stored as `scale units`. It is a running counter, it is not energy, and it is not added to the Energy dashboard. A water row that arrives with no unit still raises a repair. The integration does not invent `kWh` or `GJ`.
 
 ## Use
 
-Follow a flat's water registers in Home Assistant and on the Energy dashboard. A repair opens when the daily read keeps failing, or when heat arrives without a unit.
+Follow a flat's water registers in Home Assistant and on the Energy dashboard. A repair opens when the daily read keeps failing, or when a water meter arrives without a unit.
 
 Notify when a meter has been unavailable for an hour. Replace the entity id with the sensor from your account.
 
@@ -85,7 +87,7 @@ Notify when a meter has been unavailable for an hour. Replace the entity id with
 alias: Odecet.info meter unavailable
 triggers:
   - trigger: state
-    entity_id: sensor.cold_water_SERIAL_reading
+    entity_id: sensor.cold_water_s_n_SERIAL_reading
     to: unavailable
     for:
       hours: 1
@@ -100,7 +102,7 @@ actions:
 
 - The integration is unofficial.
 - A change to the site's login or history page can break sync until the integration is updated.
-- Heat on the current site has no unit. The value stays a raw number, a repair explains why, and it is not written to statistics. The integration does not guess a unit.
+- Heat with an empty unit is stored as `scale units`. It is not energy and it is not added to the Energy dashboard. The integration does not invent `kWh` or `GJ`. A water row with no unit still raises a repair.
 - Automatic and manual sync share a limit of one request per minute.
 - Readings before **Sync from** are ignored. The site also limits how much history it returns.
 - There is no local connection to a meter. The account has to be able to sign in on the website.

@@ -1,3 +1,5 @@
+[English](testing.md) | [Čeština](cs/testing.md)
+
 # Testing
 
 Tier 1 is fast and never contacts odecet.info. Before a push, tier 2 loads the working tree into local Home Assistant. After a push or a GitHub release, a separate command checks that HACS can download that published ref.
