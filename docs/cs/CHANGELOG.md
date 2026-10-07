@@ -6,6 +6,20 @@ Významné změny tohoto projektu. Formát sleduje [Keep a Changelog](https://ke
 
 Před tímto vydáním žádný tag nebyl, takže práce, která přistála na `main`, je zapsaná jednou, jako 0.1.4, ne jako vymyšlené meziverze.
 
+## [0.3.1] - 2026-10-07
+
+Jména měřidel a formulář nastavení se řídí jazykem Home Assistantu. Hlášené hodnoty se nemění.
+
+### Změněno
+
+- Zařízení měřidla se anglicky jmenuje `Heat [S/N 39584888]` a česky `Teplo [číslo 39584888]`. Studená a teplá voda mají stejný tvar.
+- Rozbalovací seznamy měřidel a historie a věta o typech, které účet nemá, použijí české popisky, když je Home Assistant česky.
+- Každý uživatelský dokument má český protějšek a první řádek každé stránky odkazuje na druhý jazyk.
+
+### Proč
+
+Jméno zařízení a několik popisků nastavení zůstávalo anglicky i v českém Home Assistantu. Je to změna popisku, proto zůstává na 0.3.
+
 ## [0.3.0] - 2026-10-07
 
 Prázdná jednotka u topení je surové počítadlo indikátoru na radiátoru, ne chybějící energie.
@@ -69,6 +83,7 @@ První zapsané vydání neoficiální integrace odecet.info.
 
 Uživatelé potřebují verzi, kterou jde nainstalovat přes HACS. Jeden zápis 0.1.4 se vyhýbá předstírání, že 0.1.1 až 0.1.3 vyšly.
 
+[0.3.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.3.1
 [0.3.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.3.0
 [0.2.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.1
 [0.2.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.0

@@ -8,6 +8,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.3.1] - 2026-10-07
+
+Meter names and the setup form follow the Home Assistant language. The reported values do not change.
+
+### Changed
+
+- A meter device is named `Heat [S/N 39584888]` in English and `Teplo [číslo 39584888]` in Czech. Cold water and hot water use the same pattern.
+- The meter and history dropdowns, and the sentence about types the account does not have, use the Czech labels when Home Assistant is in Czech.
+- Every user document has a Czech twin, and the first line of each page links to the other language.
+
+### Why
+
+The device name and several setup labels stayed English on a Czech Home Assistant. That is a label change, so it stays on 0.3.
+
 ## [0.3.0] - 2026-10-07
 
 An empty heat unit is the raw counter of a radiator cost allocator, not a missing energy unit.
@@ -71,6 +85,7 @@ First recorded release of the unofficial odecet.info integration.
 
 Users need a version they can install through HACS. Recording one 0.1.4 avoids pretending that 0.1.1 through 0.1.3 were released.
 
+[0.3.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.3.1
 [0.3.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.3.0
 [0.2.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.1
 [0.2.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.0
