@@ -1,5 +1,7 @@
 # Odecet.info for Home Assistant
 
+[English](README.md) · [Čeština](docs/cs/README.md)
+
 <img src="https://raw.githubusercontent.com/JustGetSchwifty/odecet-info-ha-integration/main/custom_components/odecet_info/brand/logo@2x.png" alt="odecet.info" width="512">
 
 [![CI](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml)
@@ -18,7 +20,7 @@ A meter is supported when the signed-in account returns it. There is no separate
 
 - Cold water (Studená voda). A unit labeled `m3` is stored as cubic metres.
 - Hot water (Teplá voda). Stored the same way.
-- Heat (Teplo). On the current site the heat unit is empty, so the sensor shows the raw register and is not added to statistics.
+- Heat (Teplo). The site leaves the unit empty because the number is a dimensionless **scale unit** from a radiator cost allocator, not kilowatt-hours. It is often not worth selecting. [What the heat reading is](docs/heat-cost-allocation.md).
 
 A meter that later disappears from the account is removed from Home Assistant.
 
@@ -34,7 +36,7 @@ A meter that later disappears from the account is removed from Home Assistant.
 
 The integration reads the site once a day, at about 04:00 local time, plus a random delay of up to 30 minutes. It does not poll every minute. A failed read retries with backoff and never more often than once a minute. After five failures it opens a repair and waits until the next day. **Sync now** uses the same one-minute limit.
 
-The number on the sensor is the latest register. The history graph on the entity page draws the states Home Assistant has seen since the entity was created, and that graph opens on about the last day. Older registers are stored as hourly long-term statistics. The Energy dashboard, and a statistics graph whose period is an hour or longer, read that series. Diagnostics list `oldest_at`, `latest_at`, and `statistic_points` for each meter, which is the span that was imported. Heat without a unit is still left out of statistics.
+The number on the sensor is the latest register. The history graph on the entity page draws the states Home Assistant has seen since the entity was created, and that graph opens on about the last day. Older registers are stored as hourly long-term statistics. The Energy dashboard, and a statistics graph whose period is an hour or longer, read that series. Diagnostics list `oldest_at`, `latest_at`, and `statistic_points` for each meter, which is the span that was imported. Heat scale units are included in that span. They are still not energy.
 
 ## Install
 
@@ -71,7 +73,7 @@ The same three fields can be changed later: **Settings → Devices & services �
 
 After setup, the account device shows **Sync now** and **Next manual sync**. Each meter is its own device with a **Reading** sensor.
 
-Water readings labeled `m3` are stored as cubic metres and can be added to the Energy dashboard as water. If the site does not send a unit, which is the case for heat on the current pages, the sensor shows the raw register, a repair explains why, and the value is not written to statistics. The integration does not guess a unit.
+Water readings labeled `m3` are stored as cubic metres and can be added to the Energy dashboard as water. Heat with an empty unit is stored as `scale units`. It is a running counter, it is not energy, and it is not added to the Energy dashboard. A water row that arrives with no unit still raises a repair. The integration does not invent `kWh` or `GJ`.
 
 ## Use
 

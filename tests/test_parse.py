@@ -49,7 +49,7 @@ def test_html_and_csv_agree_on_the_happy_path() -> None:
 
     heat = next(meter for meter in html.meters() if meter.medium is Medium.HEAT)
     assert heat.latest.value == Decimal("140")
-    assert heat.unit is None
+    assert heat.unit == "scale units"
 
     csv_serials = {meter.serial for meter in csv_parsed.meters()}
     assert csv_serials == {"1001", "1002", "1003"}
@@ -75,7 +75,7 @@ def test_duplicate_rows_collapse_and_problems_are_kept() -> None:
     assert "bad_date" in codes
     assert "bad_value" in codes
     assert "future_date" in codes
-    assert "missing_unit" in codes
+    assert "missing_unit" not in codes
     assert "unknown_unit" in codes
     assert "decrease" in codes
     cold_points = next(meter for meter in parsed.meters() if meter.serial == "1001")
@@ -93,6 +93,27 @@ def test_semicolon_csv_and_decimal_thousands() -> None:
     parsed = parse_csv(text, now=NOW)
     assert parsed.readings[0].value == Decimal("1234.5")
     assert parsed.readings[0].unit == "m³"
+
+
+def test_empty_heat_cell_is_a_scale_unit() -> None:
+    text = "Typ měřiče,Výrobní číslo,Datum,Stav,Jednotka\nTeplo,1003,05.10.2026,140,\n"
+    parsed = parse_csv(text, now=NOW)
+    assert parsed.readings[0].unit == "scale units"
+    assert not any(issue.code == "missing_unit" for issue in parsed.issues)
+
+
+def test_empty_water_cell_is_still_missing() -> None:
+    text = "Typ měřiče,Výrobní číslo,Datum,Stav,Jednotka\nStudená voda,1001,05.10.2026,1,\n"
+    parsed = parse_csv(text, now=NOW)
+    assert parsed.readings[0].unit is None
+    assert any(issue.code == "missing_unit" for issue in parsed.issues)
+
+
+def test_heat_cell_that_says_gj_stays_energy() -> None:
+    text = "Typ měřiče,Výrobní číslo,Datum,Stav,Jednotka\nTeplo,1003,05.10.2026,12,GJ\n"
+    parsed = parse_csv(text, now=NOW)
+    assert parsed.readings[0].unit == "GJ"
+    assert not any(issue.code == "missing_unit" for issue in parsed.issues)
 
 
 def test_header_unit_is_used_when_the_cell_is_empty() -> None:

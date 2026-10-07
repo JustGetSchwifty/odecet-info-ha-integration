@@ -70,7 +70,7 @@ Matching is case-insensitive and also accepts the same words without diacritics,
 | `L`, `l` | `L` | `water` |
 | `kWh`, `GJ`, `MJ`, `Wh`, `MWh` | canonical energy unit | `energy` for heat |
 
-On the observed account, water rows use `m3` and every heat row has an empty unit. An empty or unknown unit is kept on the reading and is not replaced with a guess. Those meters are still shown as raw registers. They do not get a device class and they are not written to statistics.
+On the observed account, water rows use `m3` and every heat row has an empty `Jednotka` cell. That empty heat cell is stored as `scale units`. It is not converted to `kWh` or `GJ`. A water row with an empty unit stays missing and raises a repair. A heat row that actually contains an energy unit keeps that unit.
 
 ## CSV export
 

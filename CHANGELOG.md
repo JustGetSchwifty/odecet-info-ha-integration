@@ -6,6 +6,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.3.0] - 2026-10-07
+
+An empty heat unit is the raw counter of a radiator cost allocator, not a missing energy unit.
+
+### Changed
+
+- Heat with an empty unit is stored as `scale units`. It stays off the Energy dashboard. The missing-unit repair is no longer raised for that case.
+- The meter step warns that heat is often not worth selecting and links the explanation.
+- User-facing pages have a Czech twin under `docs/cs/`.
+
+### Why
+
+The site never prints GJ or kWh for those rows. Treating the blank as an error hid a dimensionless scale unit and asked people to fix something the page does not contain.
+
 ## [0.2.1] - 2026-10-07
 
 The history graph on the entity shows states recorded since the meter was added. Older registers were already imported as statistics, and that was easy to miss.
@@ -55,6 +69,7 @@ First recorded release of the unofficial odecet.info integration.
 
 Users need a version they can install through HACS. Recording one 0.1.4 avoids pretending that 0.1.1 through 0.1.3 were released.
 
+[0.3.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.3.0
 [0.2.1]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.1
 [0.2.0]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.2.0
 [0.1.4]: https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases/tag/v0.1.4

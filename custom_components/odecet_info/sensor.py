@@ -29,7 +29,7 @@ from custom_components.odecet_info.const import CONF_MEDIUMS, DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
 from custom_components.odecet_info.entry import OdecetConfigEntry
 from custom_components.odecet_info.models import Medium, Meter
-from custom_components.odecet_info.parse import measurement_kind
+from custom_components.odecet_info.parse import SCALE_UNIT, measurement_kind
 from custom_components.odecet_info.statistics import hourly_statistics
 
 _LOGGER = logging.getLogger(__name__)
@@ -144,9 +144,11 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
     @property
     def state_class(self) -> SensorStateClass | None:
         meter = self._meter()
-        if meter is None or measurement_kind(meter.unit) is None:
+        if meter is None:
             return None
-        return SensorStateClass.TOTAL_INCREASING
+        if meter.unit == SCALE_UNIT or measurement_kind(meter.unit) is not None:
+            return SensorStateClass.TOTAL_INCREASING
+        return None
 
     @property
     def extra_state_attributes(self) -> dict[str, str | None]:
@@ -172,13 +174,20 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         """Write hourly history onto this entity. Skip meters with no known unit."""
         meter = self._meter()
         kind = measurement_kind(meter.unit) if meter else None
-        if meter is None or kind is None or self.entity_id is None:
+        if meter is None or self.entity_id is None:
+            return
+        if kind is None and meter.unit != SCALE_UNIT:
             return
         points = hourly_statistics(meter.readings)
         if not points:
             return
-        unit_class = VolumeConverter.UNIT_CLASS if kind == "volume" else EnergyConverter.UNIT_CLASS
         name = self.name if isinstance(self.name, str) else self.entity_id
+        if kind == "volume":
+            unit_class: str | None = VolumeConverter.UNIT_CLASS
+        elif kind == "energy":
+            unit_class = EnergyConverter.UNIT_CLASS
+        else:
+            unit_class = None
         metadata: StatisticMetaData = {
             "mean_type": StatisticMeanType.NONE,
             "has_sum": True,

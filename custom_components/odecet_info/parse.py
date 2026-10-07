@@ -55,6 +55,9 @@ TYPE_ALIASES = {
     "heat": Medium.HEAT,
 }
 
+# Empty heat cells are allocator scale units, not a missing calorimeter unit.
+SCALE_UNIT = "scale units"
+
 # Spelling variants of a unit the site actually printed. Not a guess of a missing unit.
 UNIT_ALIASES = {
     "m3": "m³",
@@ -255,6 +258,9 @@ def _parse_row(
     unit, unit_issue = normalize_unit(raw_unit)
     if unit is None and not raw_unit and default_unit:
         unit = default_unit
+        unit_issue = None
+    elif unit_issue == "missing_unit" and medium is Medium.HEAT:
+        unit = SCALE_UNIT
         unit_issue = None
     reading = Reading(
         medium=medium,

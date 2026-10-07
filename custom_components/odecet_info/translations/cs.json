@@ -1,0 +1,134 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Připojení k odecet.info",
+        "description": "Přihlaste se účtem, který vidí historii měřidel. Tato integrace není spojena s odecet.info.",
+        "data": {
+          "username": "E-mail",
+          "password": "Heslo",
+          "signin_url": "Adresa přihlášení"
+        },
+        "data_description": {
+          "username": "E-mail z přihlašovací stránky odecet.info.",
+          "password": "Uloží se do záznamu Home Assistantu. Do logu se nezapisuje.",
+          "signin_url": "Nechte výchozí adresu, pokud web nepoužívá jinou."
+        }
+      },
+      "meters": {
+        "title": "Výběr měřidel",
+        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+        "data": {
+          "mediums": "Měřidla",
+          "fetch_method": "Jak číst historii",
+          "sync_from": "Synchronizovat od"
+        },
+        "data_description": {
+          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+          "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie. Ruční synchronizace je nejvýš jednou za minutu.",
+          "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
+        }
+      },
+      "reauth_confirm": {
+        "title": "Znovu se přihlásit",
+        "description": "odecet.info odmítl uložené heslo pro {username}.",
+        "data": {
+          "password": "Heslo"
+        },
+        "data_description": {
+          "password": "Nové heslo nahradí to uložené u tohoto účtu."
+        }
+      },
+      "reconfigure": {
+        "title": "Úprava účtu",
+        "description": "Změňte e-mail, heslo nebo adresu přihlášení. Výběr měřidel zůstane v nastavení integrace.",
+        "data": {
+          "username": "E-mail",
+          "password": "Heslo",
+          "signin_url": "Adresa přihlášení"
+        },
+        "data_description": {
+          "username": "E-mail z přihlašovací stránky odecet.info.",
+          "password": "Uloží se do záznamu Home Assistantu. Do logu se nezapisuje.",
+          "signin_url": "Nechte výchozí adresu, pokud web nepoužívá jinou."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "E-mail nebo heslo bylo odmítnuto.",
+      "invalid_input": "Zadejte e-mail a heslo.",
+      "cannot_connect": "odecet.info se nepodařilo kontaktovat.",
+      "rate_limited": "odecet.info požádal o zpomalení. Minutu počkejte a zkuste to znovu.",
+      "unknown": "Odpověď webu neodpovídá očekávaným stránkám.",
+      "mediums_required": "Vyberte alespoň jeden typ měřidla."
+    },
+    "abort": {
+      "already_configured": "Tento účet už je nastavený.",
+      "no_meters": "Přihlášení prošlo, ale účet nemá studenou vodu, teplou vodu ani topení.",
+      "reauth_successful": "Heslo bylo aktualizováno.",
+      "reconfigure_successful": "Nastavení účtu bylo aktualizováno."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti Odecet.info",
+        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+        "data": {
+          "mediums": "Měřidla",
+          "fetch_method": "Jak číst historii",
+          "sync_from": "Synchronizovat od"
+        },
+        "data_description": {
+          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+          "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie.",
+          "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Uložené heslo bylo odmítnuto. Přihlaste se znovu z opravy nebo účet překonfigurujte.",
+      "invalid_input": "Zadejte e-mail a heslo.",
+      "cannot_connect": "Účet se nepodařilo ověřit. Nastavení přesto můžete uložit.",
+      "rate_limited": "odecet.info požádal o zpomalení. Minutu počkejte a zkuste to znovu.",
+      "unknown": "Odpověď webu neodpovídá očekávaným stránkám.",
+      "mediums_required": "Vyberte alespoň jeden typ měřidla."
+    }
+  },
+  "exceptions": {
+    "sync_cooldown": {
+      "message": "Ruční synchronizace je nejvýš jednou za minutu. Zbývá {seconds} sekund."
+    },
+    "sync_failed": {
+      "message": "Čtení odecet.info selhalo: {error}"
+    },
+    "auth_failed": {
+      "message": "odecet.info uložený účet odmítl."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "reading": {
+        "name": "Stav"
+      },
+      "next_manual_sync": {
+        "name": "Další ruční synchronizace"
+      }
+    },
+    "button": {
+      "sync_now": {
+        "name": "Synchronizovat"
+      }
+    }
+  },
+  "issues": {
+    "missing_unit": {
+      "title": "Měřidlo {serial} nemá jednotku",
+      "description": "odecet.info neposlal jednotku měřidla {serial}. Stav se ukazuje jako holé číslo a nezapisuje se do statistik vody ani energie."
+    },
+    "sync_failed": {
+      "title": "Synchronizace pořád selhává",
+      "description": "Čtení odecet.info selhalo {attempts}× za sebou. Další pokus je pravidelná denní synchronizace. Dřív to zkuste tlačítkem Synchronizovat až po minutové pauze."
+    }
+  }
+}

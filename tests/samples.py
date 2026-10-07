@@ -12,6 +12,7 @@ from custom_components.odecet_info.models import (
     ReadingIssue,
     ReadingSet,
 )
+from custom_components.odecet_info.parse import SCALE_UNIT
 
 PRAGUE = ZoneInfo("Europe/Prague")
 
@@ -44,12 +45,5 @@ def sample_readings(*, heat: bool = True, cold: bool = True) -> ReadingSet:
         rows.append(reading(Medium.COLD_WATER, "1001", "10", "m³", day=5))
         rows.append(reading(Medium.COLD_WATER, "1001", "12", "m³", day=6))
     if heat:
-        rows.append(reading(Medium.HEAT, "1003", "140", None, day=5))
-        issues.append(
-            ReadingIssue(
-                "missing_unit",
-                "The site did not provide a unit",
-                serial="1003",
-            )
-        )
+        rows.append(reading(Medium.HEAT, "1003", "140", SCALE_UNIT, day=5))
     return ReadingSet(tuple(rows), tuple(issues), "csv")

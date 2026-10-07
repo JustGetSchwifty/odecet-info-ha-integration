@@ -40,7 +40,7 @@ The manual button and the schedule share `last_attempt`. While that timestamp is
 
 The account device is created before any meter device. Each meter is its own device, linked with `via_device`, because a meter that points at a missing device is rejected.
 
-Water with `m³` or `L` is `device_class: water` and `state_class: total_increasing`. Heat with an energy unit is `device_class: energy`. A meter with no unit, which is what the site currently does for heat, is a raw number. It does not get a device class, and its history is not imported.
+Water with `m³` or `L` is `device_class: water` and `state_class: total_increasing`. Heat with an empty unit is `scale units` and `total_increasing`, with no energy device class, so it stays off the Energy dashboard. Its hourly history is still imported. Heat that arrives with `kWh` or `GJ` is `device_class: energy`. A water meter with no unit stays a raw number and raises a repair.
 
 Statistics use `async_import_statistics` with `source: recorder` and the sensor's entity id. That is the same series the Energy dashboard reads. A second external statistic is not created.
 

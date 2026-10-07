@@ -7,7 +7,9 @@ alwaysApply: true
 
 ## Language
 
-Write every repository artifact in English. That includes Python identifiers, comments, docstrings, Home Assistant strings, log messages, Markdown, skills, rules, and commit messages.
+Write code, identifiers, comments, docstrings, log messages, skills, rules, and commit messages in English.
+
+User-facing pages have an English original and a Czech twin. Update both in the same change: `README.md` with `docs/cs/README.md`, `CHANGELOG.md` with `docs/cs/CHANGELOG.md`, and `docs/heat-cost-allocation.md` with `docs/cs/heat-cost-allocation.md`. Keep `translations/en.json` equal to `strings.json`, and update `translations/cs.json` when those strings change. Developer docs stay English. Do not ship one language without the other.
 
 ## Secrets
 
@@ -21,7 +23,7 @@ The deploy key path is `.private/deploy`. Reference the path only. Do not copy t
 
 If you change behavior, the website contract, scheduling, entity model, or how to run tests, update the matching doc in the same change:
 
-- `README.md` — what it is, install, configure, debug
+- `README.md` and `docs/cs/README.md` — what it is, install, configure, debug
 - `docs/architecture.md` — structure and data flow
 - `docs/website-contract.md` — login, export, columns, units
 - `docs/challenges.md` — problems found and how they were solved

@@ -10,6 +10,7 @@ from custom_components.odecet_info.const import DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
 from custom_components.odecet_info.diagnostics import async_get_config_entry_diagnostics
 from custom_components.odecet_info.errors import OdecetAuthError, OdecetTransportError
+from custom_components.odecet_info.models import Medium, ReadingSet
 from custom_components.odecet_info.sensor import MeterSensor
 from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
 from homeassistant.helpers import device_registry as dr
@@ -18,7 +19,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
-from tests.samples import sample_readings
+from tests.samples import reading, sample_readings
 
 
 def _entry(**options) -> MockConfigEntry:
@@ -93,7 +94,9 @@ async def test_sensors_statistics_and_disabled_medium(hass, enable_custom_integr
 
 
 @pytest.mark.asyncio
-async def test_heat_without_a_unit_raises_a_repair(hass, enable_custom_integrations) -> None:
+async def test_heat_scale_units_are_counted_and_not_energy(
+    hass, enable_custom_integrations
+) -> None:
     entry = _entry(mediums=["heat"])
     entry.add_to_hass(hass)
     with (
@@ -105,12 +108,52 @@ async def test_heat_without_a_unit_raises_a_repair(hass, enable_custom_integrati
 
     heat = next(state for state in hass.states.async_all() if state.entity_id.endswith("_reading"))
     assert heat.state in {"140", "140.0"}
-    assert "unit_of_measurement" not in heat.attributes
+    assert heat.attributes["unit_of_measurement"] == "scale units"
     assert "device_class" not in heat.attributes
-    assert "state_class" not in heat.attributes
-    imported.assert_not_called()
+    assert heat.attributes["state_class"] == "total_increasing"
+    imported.assert_called()
+    assert imported.call_args.args[1]["unit_class"] is None
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "missing_unit_1003")
-    assert issue is not None
+    assert issue is None
+
+
+@pytest.mark.asyncio
+async def test_water_without_a_unit_still_raises_a_repair(
+    hass, enable_custom_integrations
+) -> None:
+    entry = _entry(mediums=["cold_water"])
+    entry.add_to_hass(hass)
+    readings = sample_readings(heat=False)
+    bare = readings.readings[0]
+    from custom_components.odecet_info.models import ReadingSet
+
+    stripped = ReadingSet(
+        (bare.__class__(**{**bare.__dict__, "unit": None, "raw_unit": ""}),),
+        (),
+        readings.source,
+    )
+    with _patch_fetch(stripped):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "missing_unit_1001") is not None
+
+
+@pytest.mark.asyncio
+async def test_heat_with_a_real_energy_unit_uses_that_unit(
+    hass, enable_custom_integrations
+) -> None:
+    entry = _entry(mediums=["heat"])
+    entry.add_to_hass(hass)
+    parsed = ReadingSet((reading(Medium.HEAT, "1003", "12", "kWh"),), (), "csv")
+    with (
+        _patch_fetch(parsed),
+        patch("custom_components.odecet_info.sensor.async_import_statistics") as imported,
+    ):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    state = next(item for item in hass.states.async_all() if item.entity_id.endswith("_reading"))
+    assert state.attributes["device_class"] == "energy"
+    assert imported.call_args.args[1]["unit_class"] == "energy"
 
 
 @pytest.mark.asyncio

@@ -5,7 +5,15 @@ Read this file at the start of every task, then follow the Cursor rules and skil
 
 ## Language
 
-Everything written into the repository is English: code, identifiers, comments, UI strings, logs, documentation, skills, rules, and commit messages.
+Code, identifiers, comments, log messages, skills, rules, and commit messages are English.
+
+User-facing pages exist in English and Czech. In the same commit, update both:
+
+- `README.md` and `docs/cs/README.md`
+- `CHANGELOG.md` and `docs/cs/CHANGELOG.md`
+- `docs/heat-cost-allocation.md` and `docs/cs/heat-cost-allocation.md`
+
+`strings.json` and `translations/en.json` stay the same English text. `translations/cs.json` is the Czech UI and changes with them. Developer docs (`architecture`, `testing`, `website-contract`, `challenges`) stay English. Do not skip the Czech twin.
 
 ## Secrets
 

@@ -12,9 +12,9 @@ The export menu is DataTables `csvHtml5` / `excelHtml5`. There is no CSV URL. Tr
 
 The screenshot shows pages because DataTables pages the browser. The server sends the whole table. Following "next page" links would be the wrong client.
 
-## Heat rows have no unit
+## Heat rows are scale units
 
-Water is labeled `m3`. Heat cells in `Jednotka` are empty, and the page does not show `kWh` or `GJ` next to the register. Inventing a unit would put the wrong quantity on the energy dashboard. The integration shows the raw register and raises a repair until the site provides a unit.
+Water is labeled `m3`. Heat cells in `Jednotka` are empty, and the page does not show `kWh` or `GJ`. The empty cell is the dimensionless counter of a radiator cost allocator. The integration stores `scale units` and does not put that sensor on the Energy dashboard. A water row with an empty unit still raises a repair. A heat row that really contains `GJ` or `kWh` keeps that energy unit.
 
 `m3` is normalized to `m³` because that is the same unit written without the superscript, not a guess.
 

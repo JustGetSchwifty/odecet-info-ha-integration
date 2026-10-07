@@ -17,14 +17,14 @@
       },
       "meters": {
         "title": "Choose meters",
-        "description": "Only meter types found on this account can be selected. {missing}",
+        "description": "Only meter types found on this account can be selected. {missing}\n\nHeat is a dimensionless allocator counter (scale units), not kilowatt-hours. It is often not worth selecting. [Read why](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/heat-cost-allocation.md).",
         "data": {
           "mediums": "Meters",
           "fetch_method": "How to read the history",
           "sync_from": "Sync from"
         },
         "data_description": {
-          "mediums": "Readings for types you leave out are ignored.",
+          "mediums": "Readings for types you leave out are ignored. Heat is scale units, not energy. [Read why](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/heat-cost-allocation.md).",
           "fetch_method": "Auto tries the CSV export first, then the history table. Manual sync is limited to once a minute.",
           "sync_from": "Readings before this date are ignored. Leave empty to keep the history the site returns."
         }
@@ -73,14 +73,14 @@
     "step": {
       "init": {
         "title": "Odecet.info options",
-        "description": "Only meter types found on this account can be selected. {missing}",
+        "description": "Only meter types found on this account can be selected. {missing}\n\nHeat is a dimensionless allocator counter (scale units), not kilowatt-hours. It is often not worth selecting. [Read why](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/heat-cost-allocation.md).",
         "data": {
           "mediums": "Meters",
           "fetch_method": "How to read the history",
           "sync_from": "Sync from"
         },
         "data_description": {
-          "mediums": "Readings for types you leave out are ignored.",
+          "mediums": "Readings for types you leave out are ignored. Heat is scale units, not energy. [Read why](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/heat-cost-allocation.md).",
           "fetch_method": "Auto tries the CSV export first, then the history table.",
           "sync_from": "Readings before this date are ignored. Leave empty to keep the history the site returns."
         }

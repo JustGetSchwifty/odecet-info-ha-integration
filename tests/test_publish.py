@@ -145,6 +145,26 @@ QUALITY_RULES = {
 }
 
 
+USER_DOC_PAIRS = (
+    (ROOT / "README.md", ROOT / "docs" / "cs" / "README.md"),
+    (ROOT / "CHANGELOG.md", ROOT / "docs" / "cs" / "CHANGELOG.md"),
+    (ROOT / "docs" / "heat-cost-allocation.md", ROOT / "docs" / "cs" / "heat-cost-allocation.md"),
+)
+
+
+def test_user_docs_have_a_czech_twin() -> None:
+    """A user-facing English page is not done until docs/cs has the same page."""
+    for english, czech in USER_DOC_PAIRS:
+        assert english.is_file(), english
+        assert czech.is_file(), czech
+        assert len(czech.read_text(encoding="utf-8").strip()) > 200
+    heat_en = (ROOT / "docs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
+    heat_cs = (ROOT / "docs" / "cs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
+    assert "$$" in heat_en and "$$" in heat_cs
+    assert "scale unit" in heat_en.casefold()
+    assert "dílek" in heat_cs.casefold()
+
+
 def test_english_translations_match_strings() -> None:
     """Home Assistant loads translations/en.json. strings.json must stay a copy."""
     strings = (INTEGRATION / "strings.json").read_text(encoding="utf-8")

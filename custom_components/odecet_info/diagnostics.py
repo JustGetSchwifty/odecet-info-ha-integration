@@ -12,7 +12,7 @@ from custom_components.odecet_info.const import (
     CONF_SYNC_FROM,
 )
 from custom_components.odecet_info.entry import OdecetConfigEntry
-from custom_components.odecet_info.parse import measurement_kind
+from custom_components.odecet_info.parse import SCALE_UNIT, measurement_kind
 from custom_components.odecet_info.statistics import hourly_statistics
 
 
@@ -34,7 +34,7 @@ async def async_get_config_entry_diagnostics(
         for meter in data.meters():
             statistic_points = (
                 len(hourly_statistics(meter.readings))
-                if measurement_kind(meter.unit) is not None
+                if measurement_kind(meter.unit) is not None or meter.unit == SCALE_UNIT
                 else 0
             )
             meters.append(
