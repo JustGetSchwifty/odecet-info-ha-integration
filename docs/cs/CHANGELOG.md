@@ -1,6 +1,9 @@
-[English](../../CHANGELOG.md) | [Čeština](CHANGELOG.md)
-
 # Seznam změn
+
+<p align="center">
+  <a href="../../CHANGELOG.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
+  <a href="CHANGELOG.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
+</p>
 
 Významné změny tohoto projektu. Formát sleduje [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) a verze [sémantické verzování](https://semver.org/spec/v2.0.0.html). Čísla patch a minor nejsou omezená na jednu číslici.
 

@@ -1,6 +1,9 @@
-[English](challenges.md) | [Čeština](cs/challenges.md)
-
 # Challenges
+
+<p align="center">
+  <a href="challenges.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
+  <a href="cs/challenges.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
+</p>
 
 ## Sign-in is an HTML form, not an API
 

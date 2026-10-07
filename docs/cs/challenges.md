@@ -1,6 +1,9 @@
-[English](../challenges.md) | [Čeština](challenges.md)
-
 # Obtížná místa
+
+<p align="center">
+  <a href="../challenges.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
+  <a href="challenges.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
+</p>
 
 ## Přihlášení je HTML formulář, ne API
 

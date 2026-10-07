@@ -7,7 +7,7 @@ Read this file at the start of every task, then follow the Cursor rules and skil
 
 Code, identifiers, comments, log messages, skills, rules, and commit messages are English.
 
-Every user document exists in English and Czech. In the same commit, update both. That is `README.md`, `CHANGELOG.md`, and every `docs/*.md` page, each with its twin under `docs/cs/`. The first line of both pages links to the other language. Do not leave a page English-only, and do not leave the Czech page as a short summary of the English one.
+Every user document exists in English and Czech. In the same commit, update both. That is `README.md`, `CHANGELOG.md`, and every `docs/*.md` page, each with its twin under `docs/cs/`. The language switch is the centered badge pair at the top: the current language is blue, the other language is gray. Do not leave a page English-only, and do not leave the Czech page as a short summary of the English one.
 
 `strings.json` and `translations/en.json` stay the same English text. `translations/cs.json` is the Czech UI. A new English string is copied to `translations/en.json` and translated in `translations/cs.json` in that same commit. Home Assistant shows the Czech string when its language is Czech, including meter device names and the setup selectors.
 

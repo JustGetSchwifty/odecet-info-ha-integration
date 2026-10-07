@@ -1,6 +1,9 @@
-[English](CHANGELOG.md) | [Čeština](docs/cs/CHANGELOG.md)
-
 # Changelog
+
+<p align="center">
+  <a href="CHANGELOG.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
+  <a href="docs/cs/CHANGELOG.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
+</p>
 
 All notable changes to this project are documented in this file.
 
