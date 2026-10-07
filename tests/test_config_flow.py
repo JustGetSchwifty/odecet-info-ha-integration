@@ -120,6 +120,26 @@ async def test_options_keep_only_discovered_mediums(hass, enable_custom_integrat
     assert options is None or all(option["value"] != "heat" for option in options)
 
 
+def test_missing_sentence_uses_translated_medium_names() -> None:
+    from custom_components.odecet_info.config_flow import missing_text
+
+    catalog = {
+        "component.odecet_info.selector.medium.options.hot_water": "Teplá voda",
+        "component.odecet_info.selector.missing_mediums.options.some_missing": (
+            "Na tomto účtu nejsou, proto nejsou v seznamu: {names}."
+        ),
+        "component.odecet_info.selector.missing_mediums.options.all_found": (
+            "Studená voda, teplá voda i topení byly na účtu nalezeny."
+        ),
+    }
+    assert (
+        missing_text({"cold_water", "heat"}, catalog)
+        == "Na tomto účtu nejsou, proto nejsou v seznamu: Teplá voda."
+    )
+    assert "nalezeny" in missing_text({"cold_water", "hot_water", "heat"}, catalog)
+    assert "Hot water" in missing_text({"cold_water"})
+
+
 def test_flow_error_keys_cover_each_client_failure() -> None:
     assert flow_error_key(OdecetValidationError("x")) == "invalid_input"
     assert flow_error_key(OdecetAuthError("x")) == "invalid_auth"

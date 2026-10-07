@@ -25,7 +25,7 @@
         },
         "data_description": {
           "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč]({heat_docs_url}).",
-          "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie. Ruční synchronizace je nejvýš jednou za minutu.",
+          "fetch_method": "Automaticky zkusí nejdřív CSV export a pak tabulku historie. Ruční synchronizace je nejvýš jednou za minutu.",
           "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
         }
       },
@@ -81,7 +81,7 @@
         },
         "data_description": {
           "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč]({heat_docs_url}).",
-          "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie.",
+          "fetch_method": "Automaticky zkusí nejdřív CSV export a pak tabulku historie.",
           "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
         }
       }
@@ -104,6 +104,39 @@
     },
     "auth_failed": {
       "message": "odecet.info uložený účet odmítl."
+    }
+  },
+  "device": {
+    "cold_water": {
+      "name": "Studená voda [číslo {serial}]"
+    },
+    "hot_water": {
+      "name": "Teplá voda [číslo {serial}]"
+    },
+    "heat": {
+      "name": "Teplo [číslo {serial}]"
+    }
+  },
+  "selector": {
+    "medium": {
+      "options": {
+        "cold_water": "Studená voda",
+        "hot_water": "Teplá voda",
+        "heat": "Teplo"
+      }
+    },
+    "fetch_method": {
+      "options": {
+        "auto": "Automaticky (CSV, potom tabulka)",
+        "csv": "Export CSV",
+        "table": "Tabulka historie"
+      }
+    },
+    "missing_mediums": {
+      "options": {
+        "all_found": "Studená voda, teplá voda i topení byly na účtu nalezeny.",
+        "some_missing": "Na tomto účtu nejsou, proto nejsou v seznamu: {names}."
+      }
     }
   },
   "entity": {

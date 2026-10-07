@@ -228,7 +228,14 @@ async def test_a_meter_that_disappears_is_removed(hass, enable_custom_integratio
         await hass.async_block_till_done()
     registry = dr.async_get(hass)
     heat_id = f"{entry.entry_id}_heat_1003"
-    assert registry.async_get_device(identifiers={(DOMAIN, heat_id)}) is not None
+    heat = registry.async_get_device(identifiers={(DOMAIN, heat_id)})
+    assert heat is not None
+    assert heat.name == "Heat [S/N 1003]"
+    cold = registry.async_get_device(
+        identifiers={(DOMAIN, f"{entry.entry_id}_cold_water_1001")}
+    )
+    assert cold is not None
+    assert cold.name == "Cold water [S/N 1001]"
 
     with _patch_fetch(sample_readings(heat=False)):
         await entry.runtime_data.async_refresh()
@@ -273,6 +280,10 @@ async def test_a_failed_sync_is_logged_once(hass, caplog, enable_custom_integrat
     await coordinator._handle_scheduled(dt_util.utcnow())
     meter = sample_readings().meters()[0]
     sensor = MeterSensor(coordinator, meter, "uid", None)
+    assert sensor.device_info is not None
+    assert sensor.device_info["translation_key"] == meter.medium.value
+    assert sensor.device_info["translation_placeholders"] == {"serial": meter.serial}
+    assert sensor.device_info["name"] == f"{meter.medium.label} [S/N {meter.serial}]"
     coordinator.data = None
     assert sensor.available is False
     assert sensor.native_value is None

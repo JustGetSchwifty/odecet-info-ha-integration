@@ -89,7 +89,9 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         entry_id = coordinator.config_entry.entry_id
         device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
-            name=f"{meter.medium.label} {meter.serial}",
+            name=f"{meter.medium.label} [S/N {meter.serial}]",
+            translation_key=meter.medium.value,
+            translation_placeholders={"serial": meter.serial},
             manufacturer="odecet.info",
             model=meter.medium.label,
             serial_number=meter.serial,

@@ -13,7 +13,7 @@ from homeassistant.config_entries import (
     ConfigFlowResult,
     OptionsFlow,
 )
-from homeassistant.core import callback
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.selector import (
     DateSelector,
@@ -25,6 +25,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from homeassistant.helpers.translation import async_get_translations
 
 from custom_components.odecet_info.client import OdecetClient
 from custom_components.odecet_info.const import (
@@ -83,13 +84,18 @@ def _meter_schema(
                     ],
                     multiple=True,
                     mode=SelectSelectorMode.LIST,
+                    translation_key="medium",
                 )
             ),
             vol.Required(
                 CONF_FETCH_METHOD,
                 default=defaults.get(CONF_FETCH_METHOD, FetchMethod.AUTO.value),
             ): SelectSelector(
-                SelectSelectorConfig(options=_FETCH_OPTIONS, mode=SelectSelectorMode.DROPDOWN)
+                SelectSelectorConfig(
+                    options=_FETCH_OPTIONS,
+                    mode=SelectSelectorMode.DROPDOWN,
+                    translation_key="fetch_method",
+                )
             ),
             vol.Optional(
                 CONF_SYNC_FROM, description={"suggested_value": defaults.get(CONF_SYNC_FROM, "")}
@@ -126,12 +132,31 @@ def _heat_docs_url(hass: Any) -> str:
     return _EN_HEAT_DOCS
 
 
-def _missing_text(found: set[str]) -> str:
-    missing = [medium.label for medium in Medium if medium.value not in found]
+_ALL_FOUND = "Cold water, hot water, and heat were all found."
+_SOME_MISSING = "Not on this account, so not listed: {names}."
+
+
+def _translated(catalog: dict[str, str], key: str, fallback: str) -> str:
+    return catalog.get(f"component.{DOMAIN}.selector.{key}", fallback)
+
+
+def missing_text(found: set[str], catalog: dict[str, str] | None = None) -> str:
+    """Name the meter types the account did not return, in the active language."""
+    translations = catalog or {}
+    missing = [medium for medium in Medium if medium.value not in found]
     if not missing:
-        return "Cold water, hot water, and heat were all found."
-    names = ", ".join(missing)
-    return f"Not on this account, so not listed: {names}."
+        return _translated(translations, "missing_mediums.options.all_found", _ALL_FOUND)
+    names = ", ".join(
+        _translated(translations, f"medium.options.{medium.value}", medium.label)
+        for medium in missing
+    )
+    template = _translated(translations, "missing_mediums.options.some_missing", _SOME_MISSING)
+    return template.format(names=names)
+
+
+async def _missing_text(hass: HomeAssistant, found: set[str]) -> str:
+    catalog = await async_get_translations(hass, hass.config.language, "selector", [DOMAIN])
+    return missing_text(found, catalog)
 
 
 class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -186,7 +211,7 @@ class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
             data_schema=_meter_schema(self._available, user_input or {}),
             errors=errors,
             description_placeholders={
-                "missing": _missing_text(set(self._available)),
+                "missing": await _missing_text(self.hass, set(self._available)),
                 "heat_docs_url": _heat_docs_url(self.hass),
             },
         )
@@ -300,7 +325,7 @@ class OdecetOptionsFlow(OptionsFlow):
             data_schema=_meter_schema(available, dict(self.config_entry.options)),
             errors=errors,
             description_placeholders={
-                "missing": _missing_text(set(available)),
+                "missing": await _missing_text(self.hass, set(available)),
                 "heat_docs_url": _heat_docs_url(self.hass),
             },
         )

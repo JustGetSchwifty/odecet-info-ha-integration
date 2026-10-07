@@ -106,6 +106,39 @@
       "message": "odecet.info rejected the saved account."
     }
   },
+  "device": {
+    "cold_water": {
+      "name": "Cold water [S/N {serial}]"
+    },
+    "hot_water": {
+      "name": "Hot water [S/N {serial}]"
+    },
+    "heat": {
+      "name": "Heat [S/N {serial}]"
+    }
+  },
+  "selector": {
+    "medium": {
+      "options": {
+        "cold_water": "Cold water",
+        "hot_water": "Hot water",
+        "heat": "Heat"
+      }
+    },
+    "fetch_method": {
+      "options": {
+        "auto": "Auto (CSV, then table)",
+        "csv": "CSV export",
+        "table": "History table"
+      }
+    },
+    "missing_mediums": {
+      "options": {
+        "all_found": "Cold water, hot water, and heat were all found.",
+        "some_missing": "Not on this account, so not listed: {names}."
+      }
+    }
+  },
   "entity": {
     "sensor": {
       "reading": {
