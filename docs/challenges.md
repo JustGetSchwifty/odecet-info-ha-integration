@@ -30,7 +30,7 @@ The dashboard form needs the hidden `flat` value from that account's page. The i
 
 ## Publish checks
 
-HACS looks for `custom_components/odecet_info/brand/icon.png`. A `brand/` directory at the repository root does not satisfy that check.
+HACS looks for `custom_components/odecet_info/brand/icon.png`. A `brand/` directory at the repository root does not satisfy that check. A dark theme also looks for `dark_icon.png` and `dark_icon@2x.png`. Those two files are copies of the light icons.
 
 GitHub license detection returns SPDX `NOASSERTION` when the MIT text has an extra disclaimer section. HACS then rejects the repository. The disclaimer lives in `NOTICE`. `LICENSE` stays the MIT text.
 

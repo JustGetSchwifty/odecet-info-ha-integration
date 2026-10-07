@@ -30,7 +30,7 @@ Formulář nástěnky potřebuje skrytou hodnotu `flat` ze stránky toho účtu.
 
 ## Kontroly publikování
 
-HACS hledá `custom_components/odecet_info/brand/icon.png`. Adresář `brand/` v kořeni repozitáře tu kontrolu nesplní.
+HACS hledá `custom_components/odecet_info/brand/icon.png`. Adresář `brand/` v kořeni repozitáře tu kontrolu nesplní. Tmavý motiv hledá taky `dark_icon.png` a `dark_icon@2x.png`. Ty dva soubory jsou kopie světlých ikon.
 
 Rozpoznání licence na GitHubu vrátí SPDX `NOASSERTION`, když má text MIT navíc část s upozorněním. HACS pak repozitář odmítne. Upozornění je v `NOTICE`. `LICENSE` zůstává text MIT.
 

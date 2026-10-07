@@ -59,6 +59,13 @@ def test_hacs_brand_icon_is_a_png_inside_the_integration() -> None:
     assert icon.read_bytes().startswith(PNG_MAGIC)
     assert _png_size(icon) == (256, 256)
     assert _png_size(INTEGRATION / "brand" / "icon@2x.png") == (512, 512)
+    # A dark theme asks for these names. They are the light icons copied across.
+    dark = INTEGRATION / "brand" / "dark_icon.png"
+    dark_2x = INTEGRATION / "brand" / "dark_icon@2x.png"
+    assert dark.read_bytes() == icon.read_bytes()
+    assert (INTEGRATION / "brand" / "icon@2x.png").read_bytes() == dark_2x.read_bytes()
+    assert _png_size(dark) == (256, 256)
+    assert _png_size(dark_2x) == (512, 512)
     assert _png_size(INTEGRATION / "brand" / "logo.png") == (512, 170)
     assert _png_size(INTEGRATION / "brand" / "logo@2x.png") == (1024, 341)
 

@@ -30,7 +30,7 @@ A meter that later disappears from the account is removed from Home Assistant.
 
 ## What you get
 
-- One device per meter, linked to an account device. The device is named `Heat [S/N 39584888]` in English. Czech Home Assistant shows `Teplo [číslo 39584888]`. Cold water and hot water use the same pattern.
+- One device per meter, linked to an account device. The name follows the profile language when there is one owner, and the system language otherwise. English is `Heat [S/N 39584888]`. Czech is `Teplo [výrobní číslo 39584888]`. Cold water and hot water use the same pattern. Heat scale units are shown as whole numbers.
 - A **Reading** sensor with the latest register. In Czech the sensor is **Stav**.
 - A **Sync now** button on the account device.
 - A **Next manual sync** sensor that shows when that button is allowed again.

@@ -108,13 +108,13 @@
   },
   "device": {
     "cold_water": {
-      "name": "Studená voda [číslo {serial}]"
+      "name": "Studená voda [výrobní číslo {serial}]"
     },
     "hot_water": {
-      "name": "Teplá voda [číslo {serial}]"
+      "name": "Teplá voda [výrobní číslo {serial}]"
     },
     "heat": {
-      "name": "Teplo [číslo {serial}]"
+      "name": "Teplo [výrobní číslo {serial}]"
     }
   },
   "selector": {

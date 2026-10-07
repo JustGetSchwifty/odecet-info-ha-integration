@@ -22,9 +22,11 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.translation import async_get_translations
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util.unit_conversion import EnergyConverter, VolumeConverter
 
+from custom_components.odecet_info.config_flow import async_active_language, device_name
 from custom_components.odecet_info.const import CONF_MEDIUMS, DOMAIN
 from custom_components.odecet_info.coordinator import OdecetCoordinator
 from custom_components.odecet_info.entry import OdecetConfigEntry
@@ -46,6 +48,10 @@ async def async_setup_entry(
     known: set[str] = set()
     account = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, entry.entry_id)})
     via_device_id = account.id if account is not None else None
+    # Home Assistant would translate translation_key with the system language
+    # and store that string. Format the name here so it matches the profile.
+    language = await async_active_language(hass)
+    names = await async_get_translations(hass, language, "device", [DOMAIN])
 
     def _add_meters() -> None:
         if not coordinator.data:
@@ -59,7 +65,15 @@ async def async_setup_entry(
             if unique in known:
                 continue
             known.add(unique)
-            fresh.append(MeterSensor(coordinator, meter, unique, via_device_id))
+            fresh.append(
+                MeterSensor(
+                    coordinator,
+                    meter,
+                    unique,
+                    via_device_id,
+                    device_name(meter.medium, meter.serial, names),
+                )
+            )
         if fresh:
             async_add_entities(fresh)
 
@@ -73,7 +87,6 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
 
     _attr_has_entity_name = True
     _attr_translation_key = "reading"
-    _attr_suggested_display_precision = 3
 
     def __init__(
         self,
@@ -81,6 +94,7 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         meter: Meter,
         unique_id: str,
         via_device_id: str | None,
+        name: str | None = None,
     ) -> None:
         super().__init__(coordinator)
         self._serial = meter.serial
@@ -89,9 +103,7 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
         entry_id = coordinator.config_entry.entry_id
         device_info = DeviceInfo(
             identifiers={(DOMAIN, f"{entry_id}_{meter.medium.value}_{meter.serial}")},
-            name=f"{meter.medium.label} [S/N {meter.serial}]",
-            translation_key=meter.medium.value,
-            translation_placeholders={"serial": meter.serial},
+            name=name or f"{meter.medium.label} [S/N {meter.serial}]",
             manufacturer="odecet.info",
             model=meter.medium.label,
             serial_number=meter.serial,
@@ -116,6 +128,18 @@ class MeterSensor(CoordinatorEntity[OdecetCoordinator], SensorEntity):
     def available(self) -> bool:
         """Unavailable when the latest successful fetch no longer includes this meter."""
         return super().available and self._meter() is not None
+
+    @property
+    def suggested_display_precision(self) -> int:
+        """Water and energy keep three places. Scale units are whole numbers.
+
+        Three places turn 372 into 372.000. A comma decimal format then draws
+        that as 372,000, which reads as three hundred seventy-two thousand.
+        """
+        meter = self._meter()
+        if meter is not None and meter.unit == SCALE_UNIT:
+            return 0
+        return 3
 
     @property
     def native_value(self) -> float | None:

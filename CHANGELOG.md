@@ -8,6 +8,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.3.2] - 2026-10-07
+
+An English profile no longer gets Czech setup text, and a heat counter of 372 no longer looks like 372,000.
+
+### Fixed
+
+- Dark theme icons are `dark_icon.png` and `dark_icon@2x.png`, copies of the light icons.
+- The sentence about meter types on the account, the heat explanation link, and the meter device name follow the profile language when there is one owner. Otherwise they follow the system language. Czech uses `výrobní číslo` where English uses `S/N`.
+- Heat stored as `scale units` is shown as a whole number. Water and energy still use three decimal places.
+
+### Why
+
+Those strings were translated with the system language and then pasted into a form the browser had already translated for the profile. Three decimal places turned 372 into 372.000, and a comma decimal format drew that as 372,000.
+
 ## [0.3.1] - 2026-10-07
 
 Meter names and the setup form follow the Home Assistant language. The reported values do not change.

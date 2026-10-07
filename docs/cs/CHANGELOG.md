@@ -6,6 +6,20 @@ Významné změny tohoto projektu. Formát sleduje [Keep a Changelog](https://ke
 
 Před tímto vydáním žádný tag nebyl, takže práce, která přistála na `main`, je zapsaná jednou, jako 0.1.4, ne jako vymyšlené meziverze.
 
+## [0.3.2] - 2026-10-07
+
+Anglický profil už nedostane český text nastavení a počítadlo topení 372 už nevypadá jako 372,000.
+
+### Opraveno
+
+- Ikony pro tmavý motiv jsou `dark_icon.png` a `dark_icon@2x.png`, kopie světlých ikon.
+- Věta o typech měřidel na účtu, odkaz na vysvětlení topení a jméno zařízení měřidla se řídí jazykem profilu, když je jeden vlastník. Jinak jazykem systému. Čeština používá `výrobní číslo` tam, kde angličtina má `S/N`.
+- Topení uložené jako `scale units` se ukazuje jako celé číslo. Voda a energie pořád používají tři desetinná místa.
+
+### Proč
+
+Ty řetězce se překládaly jazykem systému a vkládaly do formuláře, který prohlížeč už přeložil pro profil. Tři desetinná místa udělala z 372 hodnotu 372.000 a formát s desetinnou čárkou ji vykreslil jako 372,000.
+
 ## [0.3.1] - 2026-10-07
 
 Jména měřidel a formulář nastavení se řídí jazykem Home Assistantu. Hlášené hodnoty se nemění.

@@ -40,9 +40,9 @@ The manual button and the schedule share `last_attempt`. While that timestamp is
 
 ## Entities
 
-The account device is created before any meter device. Each meter is its own device, linked with `via_device`, because a meter that points at a missing device is rejected. The meter device name is translated: `Heat [S/N {serial}]` in English and `Teplo [číslo {serial}]` in Czech. The account device keeps the email as its name.
+The account device is created before any meter device. Each meter is its own device, linked with `via_device`, because a meter that points at a missing device is rejected. The meter device name is set at setup, without a device `translation_key`, because Home Assistant would otherwise store the system-language name. With one active owner, the name uses that profile language. Otherwise it uses the system language. English is `Heat [S/N {serial}]`. Czech is `Teplo [výrobní číslo {serial}]`. The account device keeps the email as its name.
 
-Water with `m³` or `L` is `device_class: water` and `state_class: total_increasing`. Heat with an empty unit is `scale units` and `total_increasing`, with no energy device class, so it stays off the Energy dashboard. Its hourly history is still imported. Heat that arrives with `kWh` or `GJ` is `device_class: energy`. A water meter with no unit stays a raw number and raises a repair.
+Water with `m³` or `L` is `device_class: water` and `state_class: total_increasing`, shown to three decimal places. Heat with an empty unit is `scale units` and `total_increasing`, with no energy device class, so it stays off the Energy dashboard. Those scale units are shown as whole numbers, so 372 does not become 372.000. Its hourly history is still imported. Heat that arrives with `kWh` or `GJ` is `device_class: energy`. A water meter with no unit stays a raw number and raises a repair.
 
 Statistics use `async_import_statistics` with `source: recorder` and the sensor's entity id. That is the same series the Energy dashboard reads. A second external statistic is not created.
 

@@ -20,6 +20,9 @@ from custom_components.odecet_info.errors import (
     OdecetValidationError,
     flow_error_key,
 )
+from homeassistant.components.frontend.storage import async_user_store
+from homeassistant.config_entries import ConfigEntryState
+from homeassistant.helpers import device_registry as dr
 from tests.samples import sample_readings
 
 USER = {
@@ -238,3 +241,57 @@ async def test_options_keep_the_form_when_discovery_fails(hass, enable_custom_in
             {CONF_MEDIUMS: [], CONF_FETCH_METHOD: "auto"},
         )
     assert result["errors"]["base"] == "mediums_required"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    ("system_language", "profile_language", "missing_snippet", "expected_name", "czech_docs"),
+    [
+        ("en", None, "Hot water", "Heat [S/N 1003]", False),
+        ("cs", None, "Teplá voda", "Teplo [výrobní číslo 1003]", True),
+        ("cs", "en", "Hot water", "Heat [S/N 1003]", False),
+        ("en", "cs", "Teplá voda", "Teplo [výrobní číslo 1003]", True),
+    ],
+)
+async def test_profile_language_wins_over_the_system_language(
+    hass,
+    enable_custom_integrations,
+    hass_owner_user,
+    system_language: str,
+    profile_language: str | None,
+    missing_snippet: str,
+    expected_name: str,
+    czech_docs: bool,
+) -> None:
+    """One owner's profile language beats Settings → System → General."""
+    hass.config.language = system_language
+    if profile_language is not None:
+        store = await async_user_store(hass, hass_owner_user.id)
+        await store.async_set_item("language", {"language": profile_language})
+
+    with _client(sample_readings()):
+        result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": "user"})
+        result = await hass.config_entries.flow.async_configure(result["flow_id"], USER)
+        missing = result["description_placeholders"]["missing"]
+        docs = result["description_placeholders"]["heat_docs_url"]
+        assert missing_snippet in missing
+        if missing_snippet == "Hot water":
+            assert "Teplá" not in missing
+        else:
+            assert "Hot water" not in missing
+        assert ("/docs/cs/" in docs) is czech_docs
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {CONF_MEDIUMS: ["heat"], CONF_FETCH_METHOD: "auto"},
+        )
+        await hass.async_block_till_done()
+
+    entry = result["result"]
+    if entry.state is not ConfigEntryState.LOADED:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+    device = dr.async_get(hass).async_get_device(
+        identifiers={(DOMAIN, f"{entry.entry_id}_heat_1003")}
+    )
+    assert device is not None
+    assert device.name == expected_name

@@ -25,6 +25,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+from homeassistant.helpers.storage import Store
 from homeassistant.helpers.translation import async_get_translations
 
 from custom_components.odecet_info.client import OdecetClient
@@ -124,12 +125,37 @@ _CS_HEAT_DOCS = (
 )
 
 
-def _heat_docs_url(hass: Any) -> str:
-    """Czech Home Assistant gets the Czech explanation. Everyone else gets English."""
-    language = str(getattr(hass.config, "language", "")).casefold()
-    if language.startswith("cs"):
+def heat_docs_url(language: str) -> str:
+    """Czech gets the Czech explanation. Everyone else gets English."""
+    if language.casefold().startswith("cs"):
         return _CS_HEAT_DOCS
     return _EN_HEAT_DOCS
+
+
+async def async_active_language(hass: HomeAssistant) -> str:
+    """Language for strings this integration fills in itself.
+
+    The form and the device list are drawn in the profile language. The system
+    language (Settings, System, General) is a different setting, and using it
+    here pastes Czech into an English screen. One active owner has one profile.
+    Several owners, or a profile with no language yet, use the system language.
+    """
+    system = hass.config.language or "en"
+    users = await hass.auth.async_get_users()
+    owners = [user for user in users if user.is_owner and user.is_active]
+    if len(owners) != 1:
+        return system
+    # Same file the frontend writes for the profile. Importing the frontend
+    # component would make hassfest require it as a dependency.
+    saved_store: Store[dict[str, Any]] = Store(
+        hass, 1, f"frontend.user_data_{owners[0].id}"
+    )
+    saved = (await saved_store.async_load() or {}).get("language")
+    if isinstance(saved, dict):
+        language = saved.get("language")
+        if isinstance(language, str) and language.strip():
+            return language.strip()
+    return system
 
 
 _ALL_FOUND = "Cold water, hot water, and heat were all found."
@@ -154,9 +180,28 @@ def missing_text(found: set[str], catalog: dict[str, str] | None = None) -> str:
     return template.format(names=names)
 
 
-async def _missing_text(hass: HomeAssistant, found: set[str]) -> str:
-    catalog = await async_get_translations(hass, hass.config.language, "selector", [DOMAIN])
-    return missing_text(found, catalog)
+_DEVICE_NAMES = {
+    Medium.COLD_WATER: "Cold water [S/N {serial}]",
+    Medium.HOT_WATER: "Hot water [S/N {serial}]",
+    Medium.HEAT: "Heat [S/N {serial}]",
+}
+
+
+def device_name(medium: Medium, serial: str, catalog: dict[str, str] | None = None) -> str:
+    """Meter device name in the catalog language. English is the fallback."""
+    translations = catalog or {}
+    template = translations.get(
+        f"component.{DOMAIN}.device.{medium.value}.name",
+        _DEVICE_NAMES[medium],
+    )
+    return template.format(serial=serial)
+
+
+async def _flow_copy(hass: HomeAssistant, found: set[str]) -> tuple[str, str]:
+    """Missing-types sentence and heat-docs link in the active language."""
+    language = await async_active_language(hass)
+    catalog = await async_get_translations(hass, language, "selector", [DOMAIN])
+    return missing_text(found, catalog), heat_docs_url(language)
 
 
 class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -206,14 +251,12 @@ class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
                     },
                     options=_options_from_input(user_input),
                 )
+        missing, docs_url = await _flow_copy(self.hass, set(self._available))
         return self.async_show_form(
             step_id="meters",
             data_schema=_meter_schema(self._available, user_input or {}),
             errors=errors,
-            description_placeholders={
-                "missing": await _missing_text(self.hass, set(self._available)),
-                "heat_docs_url": _heat_docs_url(self.hass),
-            },
+            description_placeholders={"missing": missing, "heat_docs_url": docs_url},
         )
 
     async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
@@ -320,14 +363,12 @@ class OdecetOptionsFlow(OptionsFlow):
             errors["base"] = error
         if not available:
             available = list(self.config_entry.options.get(CONF_MEDIUMS, []))
+        missing, docs_url = await _flow_copy(self.hass, set(available))
         return self.async_show_form(
             step_id="init",
             data_schema=_meter_schema(available, dict(self.config_entry.options)),
             errors=errors,
-            description_placeholders={
-                "missing": await _missing_text(self.hass, set(available)),
-                "heat_docs_url": _heat_docs_url(self.hass),
-            },
+            description_placeholders={"missing": missing, "heat_docs_url": docs_url},
         )
 
     async def _available_mediums(self) -> tuple[list[str], str | None]:

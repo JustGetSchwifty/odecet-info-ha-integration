@@ -14,12 +14,21 @@ from custom_components.odecet_info.models import Medium, ReadingSet
 from custom_components.odecet_info.sensor import MeterSensor
 from homeassistant.exceptions import ConfigEntryAuthFailed, HomeAssistantError
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from tests.samples import reading, sample_readings
+
+
+def _stored_precision(hass, entity_id: str) -> int:
+    """Precision Home Assistant will use when it draws the state."""
+    registry = er.async_get(hass)
+    entity = registry.async_get(entity_id)
+    assert entity is not None
+    return entity.options["sensor"]["suggested_display_precision"]
 
 
 def _entry(**options) -> MockConfigEntry:
@@ -67,6 +76,7 @@ async def test_sensors_statistics_and_disabled_medium(hass, enable_custom_integr
     assert cold.attributes["unit_of_measurement"] == "m³"
     assert cold.attributes["device_class"] == "water"
     assert cold.attributes["state_class"] == "total_increasing"
+    assert _stored_precision(hass, cold.entity_id) == 3
     assert all("1003" not in state.entity_id for state in states.values())
 
     metadata = imported.call_args.args[1]
@@ -111,6 +121,7 @@ async def test_heat_scale_units_are_counted_and_not_energy(
     assert heat.attributes["unit_of_measurement"] == "scale units"
     assert "device_class" not in heat.attributes
     assert heat.attributes["state_class"] == "total_increasing"
+    assert _stored_precision(hass, heat.entity_id) == 0
     imported.assert_called()
     assert imported.call_args.args[1]["unit_class"] is None
     issue = ir.async_get(hass).async_get_issue(DOMAIN, "missing_unit_1003")
@@ -118,9 +129,7 @@ async def test_heat_scale_units_are_counted_and_not_energy(
 
 
 @pytest.mark.asyncio
-async def test_water_without_a_unit_still_raises_a_repair(
-    hass, enable_custom_integrations
-) -> None:
+async def test_water_without_a_unit_still_raises_a_repair(hass, enable_custom_integrations) -> None:
     entry = _entry(mediums=["cold_water"])
     entry.add_to_hass(hass)
     readings = sample_readings(heat=False)
@@ -231,9 +240,7 @@ async def test_a_meter_that_disappears_is_removed(hass, enable_custom_integratio
     heat = registry.async_get_device(identifiers={(DOMAIN, heat_id)})
     assert heat is not None
     assert heat.name == "Heat [S/N 1003]"
-    cold = registry.async_get_device(
-        identifiers={(DOMAIN, f"{entry.entry_id}_cold_water_1001")}
-    )
+    cold = registry.async_get_device(identifiers={(DOMAIN, f"{entry.entry_id}_cold_water_1001")})
     assert cold is not None
     assert cold.name == "Cold water [S/N 1001]"
 
@@ -281,9 +288,13 @@ async def test_a_failed_sync_is_logged_once(hass, caplog, enable_custom_integrat
     meter = sample_readings().meters()[0]
     sensor = MeterSensor(coordinator, meter, "uid", None)
     assert sensor.device_info is not None
-    assert sensor.device_info["translation_key"] == meter.medium.value
-    assert sensor.device_info["translation_placeholders"] == {"serial": meter.serial}
+    assert "translation_key" not in sensor.device_info
     assert sensor.device_info["name"] == f"{meter.medium.label} [S/N {meter.serial}]"
+    coordinator.data = sample_readings()
+    assert sensor.suggested_display_precision == 3
+    heat = next(item for item in sample_readings().meters() if item.medium is Medium.HEAT)
+    heat_sensor = MeterSensor(coordinator, heat, "heat-uid", None)
+    assert heat_sensor.suggested_display_precision == 0
     coordinator.data = None
     assert sensor.available is False
     assert sensor.native_value is None

@@ -30,7 +30,7 @@ Měřidlo, které z účtu později zmizí, se z Home Assistantu odebere.
 
 ## Co dostanete
 
-- Jedno zařízení na měřidlo, navázané na zařízení účtu. V češtině se jmenuje `Teplo [číslo 39584888]`. Anglický Home Assistant ukáže `Heat [S/N 39584888]`. Studená a teplá voda mají stejný tvar.
+- Jedno zařízení na měřidlo, navázané na zařízení účtu. Jméno se řídí jazykem profilu, když je jeden vlastník, jinak jazykem systému. Česky je to `Teplo [výrobní číslo 39584888]`. Anglicky `Heat [S/N 39584888]`. Studená a teplá voda mají stejný tvar. Dílky topení se ukazují jako celé číslo.
 - Senzor **Stav** s posledním odečtem. V angličtině je to **Reading**.
 - Tlačítko **Synchronizovat** na zařízení účtu.
 - Senzor **Další ruční synchronizace**, který ukáže, kdy je tlačítko znovu povolené.
