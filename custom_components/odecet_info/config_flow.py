@@ -108,6 +108,24 @@ def _options_from_input(user_input: dict[str, Any]) -> dict[str, Any]:
     return options
 
 
+_EN_HEAT_DOCS = (
+    "https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/"
+    "docs/heat-cost-allocation.md"
+)
+_CS_HEAT_DOCS = (
+    "https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/"
+    "docs/cs/heat-cost-allocation.md"
+)
+
+
+def _heat_docs_url(hass: Any) -> str:
+    """Czech Home Assistant gets the Czech explanation. Everyone else gets English."""
+    language = str(getattr(hass.config, "language", "")).casefold()
+    if language.startswith("cs"):
+        return _CS_HEAT_DOCS
+    return _EN_HEAT_DOCS
+
+
 def _missing_text(found: set[str]) -> str:
     missing = [medium.label for medium in Medium if medium.value not in found]
     if not missing:
@@ -167,7 +185,10 @@ class OdecetConfigFlow(ConfigFlow, domain=DOMAIN):
             step_id="meters",
             data_schema=_meter_schema(self._available, user_input or {}),
             errors=errors,
-            description_placeholders={"missing": _missing_text(set(self._available))},
+            description_placeholders={
+                "missing": _missing_text(set(self._available)),
+                "heat_docs_url": _heat_docs_url(self.hass),
+            },
         )
 
     async def async_step_reauth(self, entry_data: Mapping[str, Any]) -> ConfigFlowResult:
@@ -278,7 +299,10 @@ class OdecetOptionsFlow(OptionsFlow):
             step_id="init",
             data_schema=_meter_schema(available, dict(self.config_entry.options)),
             errors=errors,
-            description_placeholders={"missing": _missing_text(set(available))},
+            description_placeholders={
+                "missing": _missing_text(set(available)),
+                "heat_docs_url": _heat_docs_url(self.hass),
+            },
         )
 
     async def _available_mediums(self) -> tuple[list[str], str | None]:

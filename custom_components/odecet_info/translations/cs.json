@@ -17,14 +17,14 @@
       },
       "meters": {
         "title": "Výběr měřidel",
-        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč]({heat_docs_url}).",
         "data": {
           "mediums": "Měřidla",
           "fetch_method": "Jak číst historii",
           "sync_from": "Synchronizovat od"
         },
         "data_description": {
-          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč]({heat_docs_url}).",
           "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie. Ruční synchronizace je nejvýš jednou za minutu.",
           "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
         }
@@ -73,14 +73,14 @@
     "step": {
       "init": {
         "title": "Možnosti Odecet.info",
-        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+        "description": "Vybrat lze jen typy, které účet skutečně má. {missing}\n\nTopení je bezrozměrné počítadlo indikátoru (dílky), ne kilowatthodiny. Často nemá smysl ho vybírat. [Proč]({heat_docs_url}).",
         "data": {
           "mediums": "Měřidla",
           "fetch_method": "Jak číst historii",
           "sync_from": "Synchronizovat od"
         },
         "data_description": {
-          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč](https://github.com/JustGetSchwifty/odecet-info-ha-integration/blob/main/docs/cs/heat-cost-allocation.md).",
+          "mediums": "Typy, které necháte vypnuté, se ignorují. Topení jsou dílky, ne energie. [Proč]({heat_docs_url}).",
           "fetch_method": "Auto zkusí nejdřív CSV export a pak tabulku historie.",
           "sync_from": "Odečty před tímto datem se ignorují. Prázdné pole znamená historii, kterou web vrátí."
         }
