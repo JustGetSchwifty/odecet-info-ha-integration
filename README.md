@@ -6,9 +6,9 @@
 
 [![CI](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/JustGetSchwifty/odecet-info-ha-integration?display_name=tag)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/releases)
-[![Stars](https://img.shields.io/github/stars/JustGetSchwifty/odecet-info-ha-integration)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.11%2B-blue)](https://www.home-assistant.io/)
+[![Stars](https://img.shields.io/github/stars/JustGetSchwifty/odecet-info-ha-integration)](https://github.com/JustGetSchwifty/odecet-info-ha-integration/stargazers)
 
 <p align="center">
   <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=JustGetSchwifty&repository=odecet-info-ha-integration&category=integration"><img alt="Open your Home Assistant instance and open a repository inside the Home Assistant Community Store." src="https://my.home-assistant.io/badges/hacs_repository.svg"></a>
