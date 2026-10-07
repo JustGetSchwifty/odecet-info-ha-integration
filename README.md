@@ -1,9 +1,6 @@
 # Odecet.info for Home Assistant
 
-<p align="center">
-  <a href="README.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
-  <a href="docs/cs/README.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-1f6feb?style=for-the-badge)](README.md) [![Čeština](https://img.shields.io/badge/Čeština-6e7681?style=for-the-badge)](docs/cs/README.md)
 
 <img src="https://raw.githubusercontent.com/JustGetSchwifty/odecet-info-ha-integration/main/custom_components/odecet_info/brand/logo@2x.png" alt="odecet.info" width="512">
 

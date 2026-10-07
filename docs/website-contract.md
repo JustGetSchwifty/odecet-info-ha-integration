@@ -1,9 +1,6 @@
 # odecet.info website contract
 
-<p align="center">
-  <a href="website-contract.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
-  <a href="cs/website-contract.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-1f6feb?style=for-the-badge)](website-contract.md) [![Čeština](https://img.shields.io/badge/Čeština-6e7681?style=for-the-badge)](cs/website-contract.md)
 
 Observed on 6 October 2026 against the live site. The capture used to confirm this lives in gitignored `dev/capture/`. Fixtures in `tests/fixtures/` copy the shape with invented values.
 

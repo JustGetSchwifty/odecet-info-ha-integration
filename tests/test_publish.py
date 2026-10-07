@@ -175,9 +175,9 @@ def test_user_docs_have_a_czech_twin() -> None:
         for page, other in ((english, czech), (czech, english)):
             text = page.read_text(encoding="utf-8")
             top = "\n".join(text.lstrip().splitlines()[:12])
-            assert 'alt="English"' in top and 'alt="Čeština"' in top, page
+            assert "![English]" in top and "![Čeština]" in top, page
             relative = Path(os.path.relpath(other, page.parent)).as_posix()
-            assert f'href="{relative}"' in top, page
+            assert f"]({relative})" in top, page
     heat_en = (ROOT / "docs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
     heat_cs = (ROOT / "docs" / "cs" / "heat-cost-allocation.md").read_text(encoding="utf-8")
     assert "$$" in heat_en and "$$" in heat_cs

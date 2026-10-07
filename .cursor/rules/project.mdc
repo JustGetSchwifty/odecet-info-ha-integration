@@ -9,7 +9,7 @@ alwaysApply: true
 
 Write code, identifiers, comments, docstrings, log messages, skills, rules, and commit messages in English.
 
-Every user document has an English original and a Czech twin. Update both in the same change. That is `README.md`, `CHANGELOG.md`, and every `docs/*.md` page, each with the same filename under `docs/cs/`. The language switch is the centered badge pair at the top: the current language is blue, the other language is gray. The Czech page covers the same sections. Do not ship one language without the other.
+Every user document has an English original and a Czech twin. Update both in the same change. That is `README.md`, `CHANGELOG.md`, and every `docs/*.md` page, each with the same filename under `docs/cs/`. The language switch is a Markdown image link on one line, `[![English](badge)](this-page.md)` and `[![Čeština](badge)](the-other-page.md)`. The current language is blue, the other is gray. GitHub rewrites that relative link. Do not put it in an HTML `href`. The Czech page covers the same sections. Do not ship one language without the other.
 
 Keep `translations/en.json` equal to `strings.json`. Translate every new English string in `translations/cs.json` in that same change, including device names and selector labels.
 

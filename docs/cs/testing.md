@@ -1,9 +1,6 @@
 # Testování
 
-<p align="center">
-  <a href="../testing.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
-  <a href="testing.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-6e7681?style=for-the-badge)](../testing.md) [![Čeština](https://img.shields.io/badge/Čeština-1f6feb?style=for-the-badge)](testing.md)
 
 Tier 1 je rychlý a odecet.info nekontaktuje. Před pushem tier 2 nahraje pracovní strom do místního Home Assistantu. Po pushi nebo vydání na GitHubu samostatný příkaz ověří, že HACS ten publikovaný odkaz stáhne.
 

@@ -1,9 +1,6 @@
 # Smlouva webu odecet.info
 
-<p align="center">
-  <a href="../website-contract.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
-  <a href="website-contract.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-6e7681?style=for-the-badge)](../website-contract.md) [![Čeština](https://img.shields.io/badge/Čeština-1f6feb?style=for-the-badge)](website-contract.md)
 
 Pozorováno 6. října 2026 na živém webu. Zachycení, kterým se to potvrdilo, je v gitignorovaném `dev/capture/`. Fixture v `tests/fixtures/` kopírují tvar s vymyšlenými hodnotami.
 

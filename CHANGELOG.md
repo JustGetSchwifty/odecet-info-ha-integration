@@ -1,9 +1,6 @@
 # Changelog
 
-<p align="center">
-  <a href="CHANGELOG.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
-  <a href="docs/cs/CHANGELOG.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-1f6feb?style=for-the-badge)](CHANGELOG.md) [![Čeština](https://img.shields.io/badge/Čeština-6e7681?style=for-the-badge)](docs/cs/CHANGELOG.md)
 
 All notable changes to this project are documented in this file.
 

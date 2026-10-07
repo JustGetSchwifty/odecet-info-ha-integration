@@ -20,7 +20,7 @@ Keep these files true for the code that is about to be committed:
 | `CHANGELOG.md`, `docs/cs/CHANGELOG.md`, `version.json` | A version is cut. See `.cursor/skills/versioning/SKILL.md` |
 | `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/` | The working agreement changes |
 
-Write the English page and the Czech twin in the same change. The language switch is the centered badge pair at the top: the current language is blue, the other language is gray. A new string in `strings.json` is copied to `translations/en.json` and translated in `translations/cs.json` in that change. Code, identifiers, logs, skills, rules, and commit messages stay English. Do not mention values from `.env` or anything under `.private/`.
+Write the English page and the Czech twin in the same change. The language switch is a Markdown image link on one line, `[![English](badge)](this-page.md)` and `[![Čeština](badge)](the-other-page.md)`. The current language is blue, the other is gray. GitHub rewrites that relative link. Do not put it in an HTML `href`. A new string in `strings.json` is copied to `translations/en.json` and translated in `translations/cs.json` in that change. Code, identifiers, logs, skills, rules, and commit messages stay English. Do not mention values from `.env` or anything under `.private/`.
 
 ## Commits
 

@@ -1,9 +1,6 @@
 # Architektura
 
-<p align="center">
-  <a href="../architecture.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
-  <a href="architecture.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-6e7681?style=for-the-badge)](../architecture.md) [![Čeština](https://img.shields.io/badge/Čeština-1f6feb?style=for-the-badge)](architecture.md)
 
 Integrace je jeden záznam Home Assistantu na jeden účet odecet.info. Kód, který mluví s webem, Home Assistant neimportuje, takže testy parseru běží bez něj.
 

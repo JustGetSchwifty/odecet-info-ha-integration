@@ -1,9 +1,6 @@
 # Architecture
 
-<p align="center">
-  <a href="architecture.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
-  <a href="cs/architecture.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-1f6feb?style=for-the-badge)](architecture.md) [![Čeština](https://img.shields.io/badge/Čeština-6e7681?style=for-the-badge)](cs/architecture.md)
 
 The integration is one Home Assistant config entry per odecet.info account. Code that talks to the site does not import Home Assistant, so the parser tests run without it.
 

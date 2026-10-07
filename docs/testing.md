@@ -1,9 +1,6 @@
 # Testing
 
-<p align="center">
-  <a href="testing.md"><img alt="English" src="https://img.shields.io/badge/English-1f6feb?style=for-the-badge"></a>
-  <a href="cs/testing.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-6e7681?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-1f6feb?style=for-the-badge)](testing.md) [![Čeština](https://img.shields.io/badge/Čeština-6e7681?style=for-the-badge)](cs/testing.md)
 
 Tier 1 is fast and never contacts odecet.info. Before a push, tier 2 loads the working tree into local Home Assistant. After a push or a GitHub release, a separate command checks that HACS can download that published ref.
 

@@ -1,9 +1,6 @@
 # Co vlastně ukazuje topení
 
-<p align="center">
-  <a href="../heat-cost-allocation.md"><img alt="English" src="https://img.shields.io/badge/English-6e7681?style=for-the-badge"></a>
-  <a href="heat-cost-allocation.md"><img alt="Čeština" src="https://img.shields.io/badge/%C4%8Ce%C5%A1tina-1f6feb?style=for-the-badge"></a>
-</p>
+[![English](https://img.shields.io/badge/English-6e7681?style=for-the-badge)](../heat-cost-allocation.md) [![Čeština](https://img.shields.io/badge/Čeština-1f6feb?style=for-the-badge)](heat-cost-allocation.md)
 
 Tento přehled přináší ucelený technický a matematický popis celého řetězce rozúčtování tepla v bytových domech s centrální otopnou soustavou – od fyzikálního vzniku impulsu na radiátoru přes normalizační koeficienty až po finální přepočet na jouly a kilowatthodiny. Home Assistant z odecet.info dostane jen první krok, surové dílky.
 
