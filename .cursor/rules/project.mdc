@@ -46,6 +46,10 @@ After each logical chunk, create one local commit. A chunk is one coherent chang
 - A minor or patch version cut publishes an annotated tag and a GitHub Release. See `.cursor/skills/versioning/SKILL.md`. Do not push a major or the first release candidate unless the user explicitly approved that version in the current conversation.
 - Before a push, run `uv run python dev/bootstrap_ha.py --local`. That copies the working tree into Home Assistant. HACS cannot test a commit that is not on GitHub yet.
 
+## Other integrations
+
+Do not read another integration's `.storage` data, and do not open that file with `Store` under its name. Strings this integration fills in use `hass.config.language`. A meter device name uses a device `translation_key`.
+
 ## Scope
 
 Do not add features that the current task does not need. Prefer a small extension of an existing type over a parallel implementation.

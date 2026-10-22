@@ -6,6 +6,24 @@ Významné změny tohoto projektu. Formát sleduje [Keep a Changelog](https://ke
 
 Před tímto vydáním žádný tag nebyl, takže práce, která přistála na `main`, je zapsaná jednou, jako 0.1.4, ne jako vymyšlené meziverze.
 
+## [0.3.3] - 2026-10-22
+
+Text nastavení a jména měřidel se řídí jazykem systému Home Assistantu. Instalace začíná hledáním v HACS.
+
+### Opraveno
+
+- Věta o typech měřidel, odkaz na vysvětlení topení a jméno zařízení měřidla se řídí cestou Nastavení → Systém → Obecné. Integrace už nečte soubor profilu frontendu.
+- Zařízení měřidla se jmenuje přes překladový klíč zařízení. Home Assistant uloží `Heat [S/N 39584888]` nebo `Teplo [výrobní číslo 39584888]` z toho jazyka systému.
+- Test odmítne čtení úložiště jiné integrace, včetně otevření toho souboru podle jména.
+
+### Změněno
+
+- Instalace začíná hledáním **Odecet.info** v HACS. Ruční přidání repozitáře z GitHubu zůstává záloha, když ho hledání nenajde.
+
+### Proč
+
+Vlastní integrace nesmí číst uložená data jiné integrace. Hledání jazyka profilu otevíralo soubor uživatele frontendu podle jména, aby hassfest neviděl import.
+
 ## [0.3.2] - 2026-10-07
 
 Anglický profil už nedostane český text nastavení a počítadlo topení 372 už nevypadá jako 372,000.

@@ -288,8 +288,9 @@ async def test_a_failed_sync_is_logged_once(hass, caplog, enable_custom_integrat
     meter = sample_readings().meters()[0]
     sensor = MeterSensor(coordinator, meter, "uid", None)
     assert sensor.device_info is not None
-    assert "translation_key" not in sensor.device_info
-    assert sensor.device_info["name"] == f"{meter.medium.label} [S/N {meter.serial}]"
+    assert sensor.device_info["translation_key"] == meter.medium.value
+    assert sensor.device_info["translation_placeholders"] == {"serial": meter.serial}
+    assert "name" not in sensor.device_info
     coordinator.data = sample_readings()
     assert sensor.suggested_display_precision == 3
     heat = next(item for item in sample_readings().meters() if item.medium is Medium.HEAT)

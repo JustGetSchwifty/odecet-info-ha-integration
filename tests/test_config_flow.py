@@ -249,11 +249,11 @@ async def test_options_keep_the_form_when_discovery_fails(hass, enable_custom_in
     [
         ("en", None, "Hot water", "Heat [S/N 1003]", False),
         ("cs", None, "Teplá voda", "Teplo [výrobní číslo 1003]", True),
-        ("cs", "en", "Hot water", "Heat [S/N 1003]", False),
-        ("en", "cs", "Teplá voda", "Teplo [výrobní číslo 1003]", True),
+        ("cs", "en", "Teplá voda", "Teplo [výrobní číslo 1003]", True),
+        ("en", "cs", "Hot water", "Heat [S/N 1003]", False),
     ],
 )
-async def test_profile_language_wins_over_the_system_language(
+async def test_system_language_wins_over_the_profile_language(
     hass,
     enable_custom_integrations,
     hass_owner_user,
@@ -263,7 +263,7 @@ async def test_profile_language_wins_over_the_system_language(
     expected_name: str,
     czech_docs: bool,
 ) -> None:
-    """One owner's profile language beats Settings → System → General."""
+    """Settings, System, General wins. A profile language saved by the frontend does not."""
     hass.config.language = system_language
     if profile_language is not None:
         store = await async_user_store(hass, hass_owner_user.id)

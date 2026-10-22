@@ -11,6 +11,8 @@ Every user document exists in English and Czech. In the same commit, update both
 
 `strings.json` and `translations/en.json` stay the same English text. `translations/cs.json` is the Czech UI. A new English string is copied to `translations/en.json` and translated in `translations/cs.json` in that same commit. Home Assistant shows the Czech string when its language is Czech, including meter device names and the setup selectors.
 
+Do not read another integration's `.storage` data, and do not open that file with `Store` under its name. Strings this integration fills in use `hass.config.language`. A meter device name uses a device `translation_key`. `tests/test_publish.py` rejects that storage read in CI.
+
 ## Secrets
 
 `.env` and `.private/` are out of bounds for git, documentation, skills, and commit messages.

@@ -30,7 +30,7 @@ Měřidlo, které z účtu později zmizí, se z Home Assistantu odebere.
 
 ## Co dostanete
 
-- Jedno zařízení na měřidlo, navázané na zařízení účtu. Jméno se řídí jazykem profilu, když je jeden vlastník, jinak jazykem systému. Česky je to `Teplo [výrobní číslo 39584888]`. Anglicky `Heat [S/N 39584888]`. Studená a teplá voda mají stejný tvar. Dílky topení se ukazují jako celé číslo.
+- Jedno zařízení na měřidlo, navázané na zařízení účtu. Jméno se řídí jazykem systému Home Assistantu (Nastavení → Systém → Obecné). Česky je to `Teplo [výrobní číslo 39584888]`. Anglicky `Heat [S/N 39584888]`. Studená a teplá voda mají stejný tvar. Dílky topení se ukazují jako celé číslo.
 - Senzor **Stav** s posledním odečtem. V angličtině je to **Reading**.
 - Tlačítko **Synchronizovat** na zařízení účtu.
 - Senzor **Další ruční synchronizace**, který ukáže, kdy je tlačítko znovu povolené.
@@ -44,14 +44,13 @@ Integrace čte web jednou denně, kolem 04:00 místního času, plus náhodné z
 
 ## Instalace
 
-Integrace není ve výchozím katalogu HACS. Home Assistant musí být **2025.11.0** nebo novější. Na starší verzi HACS vydání odmítne.
+Home Assistant musí být **2025.11.0** nebo novější. Na starší verzi HACS vydání odmítne.
 
 1. Nainstalujte [HACS](https://www.hacs.xyz/docs/use/download/download/) a dokončete jeho nastavení včetně přihlášení ke GitHubu, aby se HACS objevil v postranní liště.
-2. Otevřete HACS. V nabídce vpravo nahoře zvolte **Custom repositories**.
-3. Přidejte `https://github.com/JustGetSchwifty/odecet-info-ha-integration`, typ nastavte na **Integration** a stiskněte **Add**. Samotné přidání adresy nic nestáhne.
-4. Vyhledejte **Odecet.info**, otevřete ho a stiskněte **Download**. Nechte vybrané nejnovější vydání.
-5. Restartujte Home Assistant, když HACS ukáže **Pending restart**. Aktualizace ten restart potřebuje. První stažení se často načte i bez něj.
-6. Jděte do **Nastavení → Zařízení a služby → Přidat integraci**, vyhledejte **Odecet.info** a zadejte účet.
+2. Otevřete HACS, vyhledejte **Odecet.info**, otevřete ho a stiskněte **Download**. Nechte vybrané nejnovější vydání.
+3. Když ho hledání nenajde, přidejte repozitář ručně a hledejte znovu. V nabídce vpravo nahoře zvolte **Custom repositories**. Přidejte `https://github.com/JustGetSchwifty/odecet-info-ha-integration`, typ nastavte na **Integration** a stiskněte **Add**. Samotné přidání adresy nic nestáhne.
+4. Restartujte Home Assistant, když HACS ukáže **Pending restart**. Aktualizace ten restart potřebuje. První stažení se často načte i bez něj.
+5. Jděte do **Nastavení → Zařízení a služby → Přidat integraci**, vyhledejte **Odecet.info** a zadejte účet.
 
 Tento repozitář v HACS otevře i odznak nahoře.
 

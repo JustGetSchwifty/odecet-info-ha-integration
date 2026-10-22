@@ -25,7 +25,6 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
-from homeassistant.helpers.storage import Store
 from homeassistant.helpers.translation import async_get_translations
 
 from custom_components.odecet_info.client import OdecetClient
@@ -132,32 +131,6 @@ def heat_docs_url(language: str) -> str:
     return _EN_HEAT_DOCS
 
 
-async def async_active_language(hass: HomeAssistant) -> str:
-    """Language for strings this integration fills in itself.
-
-    The form and the device list are drawn in the profile language. The system
-    language (Settings, System, General) is a different setting, and using it
-    here pastes Czech into an English screen. One active owner has one profile.
-    Several owners, or a profile with no language yet, use the system language.
-    """
-    system = hass.config.language or "en"
-    users = await hass.auth.async_get_users()
-    owners = [user for user in users if user.is_owner and user.is_active]
-    if len(owners) != 1:
-        return system
-    # Same file the frontend writes for the profile. Importing the frontend
-    # component would make hassfest require it as a dependency.
-    saved_store: Store[dict[str, Any]] = Store(
-        hass, 1, f"frontend.user_data_{owners[0].id}"
-    )
-    saved = (await saved_store.async_load() or {}).get("language")
-    if isinstance(saved, dict):
-        language = saved.get("language")
-        if isinstance(language, str) and language.strip():
-            return language.strip()
-    return system
-
-
 _ALL_FOUND = "Cold water, hot water, and heat were all found."
 _SOME_MISSING = "Not on this account, so not listed: {names}."
 
@@ -167,7 +140,7 @@ def _translated(catalog: dict[str, str], key: str, fallback: str) -> str:
 
 
 def missing_text(found: set[str], catalog: dict[str, str] | None = None) -> str:
-    """Name the meter types the account did not return, in the active language."""
+    """Name the meter types the account did not return, in the catalog language."""
     translations = catalog or {}
     missing = [medium for medium in Medium if medium.value not in found]
     if not missing:
@@ -180,26 +153,13 @@ def missing_text(found: set[str], catalog: dict[str, str] | None = None) -> str:
     return template.format(names=names)
 
 
-_DEVICE_NAMES = {
-    Medium.COLD_WATER: "Cold water [S/N {serial}]",
-    Medium.HOT_WATER: "Hot water [S/N {serial}]",
-    Medium.HEAT: "Heat [S/N {serial}]",
-}
-
-
-def device_name(medium: Medium, serial: str, catalog: dict[str, str] | None = None) -> str:
-    """Meter device name in the catalog language. English is the fallback."""
-    translations = catalog or {}
-    template = translations.get(
-        f"component.{DOMAIN}.device.{medium.value}.name",
-        _DEVICE_NAMES[medium],
-    )
-    return template.format(serial=serial)
-
-
 async def _flow_copy(hass: HomeAssistant, found: set[str]) -> tuple[str, str]:
-    """Missing-types sentence and heat-docs link in the active language."""
-    language = await async_active_language(hass)
+    """Missing-types sentence and heat-docs link in the system language.
+
+    These two values are pasted into a form Home Assistant has already
+    translated. The system language is Settings, System, General.
+    """
+    language = hass.config.language or "en"
     catalog = await async_get_translations(hass, language, "selector", [DOMAIN])
     return missing_text(found, catalog), heat_docs_url(language)
 

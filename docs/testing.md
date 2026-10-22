@@ -16,7 +16,7 @@ uv run pytest
 
 `mypy` is strict for `custom_components/odecet_info`. `pytest` fails when coverage of that package drops below 95 percent. CI runs both, and it also runs every night and on demand so a new hassfest or HACS rule is caught without a push.
 
-`tests/test_publish.py` checks the tree for the hassfest and HACS failures that do not need GitHub: manifest key order, the recorder dependency, the integration brand icon, and a LICENSE file GitHub can identify as MIT. The same hassfest image CI uses can be run locally:
+`tests/test_publish.py` checks the tree for the hassfest and HACS failures that do not need GitHub: manifest key order, the recorder dependency, the integration brand icon, a LICENSE file GitHub can identify as MIT, and a read of another integration's storage. Opening that file with `Store` under its name fails the same check. The same hassfest image CI uses can be run locally:
 
 ```bash
 docker run --rm -v "$PWD://github/workspace" ghcr.io/home-assistant/hassfest

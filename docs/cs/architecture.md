@@ -40,7 +40,7 @@ Ruční tlačítko a plán sdílejí `last_attempt`. Dokud je ta značka mladš�
 
 ## Entity
 
-Zařízení účtu vznikne dřív než zařízení měřidla. Každé měřidlo je vlastní zařízení, navázané přes `via_device`, protože měřidlo ukazující na chybějící zařízení se odmítne. Jméno zařízení měřidla se nastaví při startu, bez `translation_key` na zařízení, protože Home Assistant by jinak uložil jméno v jazyce systému. Když je jeden aktivní vlastník, jméno použije jazyk jeho profilu. Jinak použije jazyk systému. Anglicky je to `Heat [S/N {serial}]`, česky `Teplo [výrobní číslo {serial}]`. Zařízení účtu si nechá e-mail.
+Zařízení účtu vznikne dřív než zařízení měřidla. Každé měřidlo je vlastní zařízení, navázané přes `via_device`, protože měřidlo ukazující na chybějící zařízení se odmítne. Jméno zařízení měřidla je `translation_key` zařízení. Home Assistant ho složí z jazyka systému, Nastavení → Systém → Obecné, a ten řetězec uloží. Anglicky je to `Heat [S/N {serial}]`, česky `Teplo [výrobní číslo {serial}]`. Zařízení účtu si nechá e-mail.
 
 Voda s `m³` nebo `L` má `device_class: water` a `state_class: total_increasing` a ukazuje se na tři desetinná místa. Topení s prázdnou jednotkou je `scale units` a `total_increasing`, bez energetické třídy, takže zůstane mimo Energy dashboard. Ty dílky se ukazují jako celé číslo, takže 372 nezůstane 372,000. Jeho hodinová historie se přesto importuje. Topení, které přijde s `kWh` nebo `GJ`, má `device_class: energy`. Vodní měřidlo bez jednotky zůstane holé číslo a založí opravu.
 

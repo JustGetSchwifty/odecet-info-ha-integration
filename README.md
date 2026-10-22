@@ -30,7 +30,7 @@ A meter that later disappears from the account is removed from Home Assistant.
 
 ## What you get
 
-- One device per meter, linked to an account device. The name follows the profile language when there is one owner, and the system language otherwise. English is `Heat [S/N 39584888]`. Czech is `Teplo [výrobní číslo 39584888]`. Cold water and hot water use the same pattern. Heat scale units are shown as whole numbers.
+- One device per meter, linked to an account device. The name follows the Home Assistant system language (Settings → System → General). English is `Heat [S/N 39584888]`. Czech is `Teplo [výrobní číslo 39584888]`. Cold water and hot water use the same pattern. Heat scale units are shown as whole numbers.
 - A **Reading** sensor with the latest register. In Czech the sensor is **Stav**.
 - A **Sync now** button on the account device.
 - A **Next manual sync** sensor that shows when that button is allowed again.
@@ -44,14 +44,13 @@ The number on the sensor is the latest register. The history graph on the entity
 
 ## Install
 
-The integration is not in the default HACS catalog. Home Assistant must be **2025.11.0** or newer. HACS refuses the release on an older version.
+Home Assistant must be **2025.11.0** or newer. HACS refuses the release on an older version.
 
 1. Install [HACS](https://www.hacs.xyz/docs/use/download/download/) and finish its setup, including the GitHub device login, so HACS appears in the sidebar.
-2. Open HACS. In the top-right menu, choose **Custom repositories**.
-3. Add `https://github.com/JustGetSchwifty/odecet-info-ha-integration`, set the type to **Integration**, and press **Add**. Adding the address does not download the integration.
-4. Search for **Odecet.info**, open it, and press **Download**. Leave the newest release selected.
-5. Restart Home Assistant if HACS shows **Pending restart**. An update needs that restart. The first download is often loaded without one.
-6. Go to **Settings → Devices & services → Add integration**, search for **Odecet.info**, and enter the account.
+2. Open HACS, search for **Odecet.info**, open it, and press **Download**. Leave the newest release selected.
+3. If that search does not list it, add the repository by hand and search again. In the top-right menu, choose **Custom repositories**. Add `https://github.com/JustGetSchwifty/odecet-info-ha-integration`, set the type to **Integration**, and press **Add**. Adding the address does not download the integration.
+4. Restart Home Assistant if HACS shows **Pending restart**. An update needs that restart. The first download is often loaded without one.
+5. Go to **Settings → Devices & services → Add integration**, search for **Odecet.info**, and enter the account.
 
 You can open this repository in HACS with the badge above.
 

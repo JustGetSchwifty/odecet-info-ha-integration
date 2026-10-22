@@ -51,6 +51,10 @@ install. If GitHub answers 403, sign in to HACS from the Home Assistant UI.
 The default HACS catalog host (`data-v2.hacs.xyz`) was unreachable from this
 container. Adding the repository by its GitHub name does not need that host.
 
+## The profile language belongs to the frontend
+
+The setup sentence and the meter device name once followed the owner's profile language. That meant opening the frontend integration's file in `.storage`. A custom integration must not read another integration's stored data. Skipping the import and opening the file by name does not make it allowed. Those strings now follow the Home Assistant system language, Settings → System → General. The meter device name is a device `translation_key`, and Home Assistant stores the system-language name. `tests/test_publish.py` rejects the storage read, including a `Store` call and the frontend file name, so the lookup cannot return quietly.
+
 ## A meter device must point at an existing account device
 
 Home Assistant rejects `via_device` when the parent device does not exist yet,

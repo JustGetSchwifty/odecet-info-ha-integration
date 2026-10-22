@@ -51,6 +51,10 @@ Když GitHub odpoví 403, přihlaste se do HACS z rozhraní Home Assistantu.
 Výchozí hostitel katalogu HACS (`data-v2.hacs.xyz`) z tohoto kontejneru nebyl
 dostupný. Přidání repozitáře podle jména na GitHubu toho hostitele nepotřebuje.
 
+## Jazyk profilu patří frontendu
+
+Věta v nastavení a jméno zařízení měřidla se dřív řídily jazykem profilu vlastníka. To znamenalo otevřít soubor integrace frontend v `.storage`. Vlastní integrace nesmí číst uložená data jiné integrace. Vynechání importu a otevření souboru podle jména to nepovolí. Ty řetězce se teď řídí jazykem systému Home Assistantu, Nastavení → Systém → Obecné. Jméno zařízení měřidla je `translation_key` zařízení a Home Assistant uloží jméno v jazyce systému. `tests/test_publish.py` to čtení odmítne, včetně volání `Store` a jména souboru frontendu, takže se lookup nemůže potichu vrátit.
+
 ## Zařízení měřidla musí ukazovat na existující zařízení účtu
 
 Home Assistant odmítne `via_device`, když nadřazené zařízení ještě neexistuje,

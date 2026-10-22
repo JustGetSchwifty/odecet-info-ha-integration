@@ -42,6 +42,38 @@ def test_manifest_key_order_matches_hassfest() -> None:
     assert keys[2:] == sorted(keys[2:])
 
 
+def test_integration_does_not_read_another_integrations_storage() -> None:
+    """A custom integration must not open another integration's storage file.
+
+    Importing the frontend component is not the only way in. The rejected
+    code constructed Store with the frontend file name and never imported it.
+    """
+    forbidden_text = (
+        "user_data_",
+        ".storage",
+        "async_user_store",
+        "homeassistant.components.frontend",
+    )
+    for path in INTEGRATION.rglob("*.py"):
+        source = path.read_text(encoding="utf-8")
+        for snippet in forbidden_text:
+            assert snippet not in source, f"{path.name} contains {snippet}"
+        tree = ast.parse(source)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func = node.func
+                name = func.id if isinstance(func, ast.Name) else getattr(func, "attr", None)
+                assert name != "Store", f"{path.name} calls Store"
+            if isinstance(node, ast.ImportFrom) and node.module:
+                assert not node.module.startswith("homeassistant.components.frontend"), path.name
+                assert all(alias.name != "async_user_store" for alias in node.names), path.name
+            if isinstance(node, ast.Import):
+                assert all(
+                    not alias.name.startswith("homeassistant.components.frontend")
+                    for alias in node.names
+                ), path.name
+
+
 def test_recorder_is_declared_because_statistics_import_it() -> None:
     """hassfest rejects a component import that is missing from the manifest."""
     manifest = json.loads((INTEGRATION / "manifest.json").read_text(encoding="utf-8"))

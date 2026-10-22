@@ -23,6 +23,7 @@ Add both sides when behavior changes:
 
 - Optimistic: valid login body `True`, a CSV and an HTML table that become the same readings, a config flow that creates an entry.
 - Pessimistic: bad credentials, missing antiforgery token, honeypot rejection if the server exposes it, timeout, HTTP 429 and 5xx, a login page returned instead of CSV, missing columns, decimal comma, `DD.MM.YYYY`, duplicate rows, missing unit, a decreasing register, dates outside the sync window, cooldown rejection, and a disabled medium left out.
+- Guard: `tests/test_publish.py` scans the integration source and fails if it reads another integration's storage, including a `Store` opened under that integration's file name. A profile language saved by the frontend must not change setup text or meter device names. Those follow `hass.config.language`.
 
 ## Rules
 

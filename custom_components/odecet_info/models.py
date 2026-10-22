@@ -17,7 +17,7 @@ class Medium(StrEnum):
 
     @property
     def label(self) -> str:
-        """English name used in forms and device names."""
+        """English name used in forms and as the device model."""
         labels = {
             Medium.COLD_WATER: "Cold water",
             Medium.HOT_WATER: "Hot water",

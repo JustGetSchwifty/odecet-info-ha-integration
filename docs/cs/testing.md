@@ -16,7 +16,7 @@ uv run pytest
 
 `mypy` je pro `custom_components/odecet_info` striktní. `pytest` selže, když pokrytí toho balíčku klesne pod 95 procent. CI pouští obojí, a taky každou noc a na vyžádání, aby se nové pravidlo hassfestu nebo HACS chytilo i bez pushe.
 
-`tests/test_publish.py` kontroluje strom na chyby hassfestu a HACS, které GitHub nepotřebují: pořadí klíčů manifestu, závislost na recorderu, ikonu značky integrace a soubor LICENSE, který GitHub pozná jako MIT. Stejný obraz hassfestu jako v CI jde spustit místně:
+`tests/test_publish.py` kontroluje strom na chyby hassfestu a HACS, které GitHub nepotřebují: pořadí klíčů manifestu, závislost na recorderu, ikonu značky integrace, soubor LICENSE, který GitHub pozná jako MIT, a čtení úložiště jiné integrace. Otevření toho souboru přes `Store` pod jeho jménem spadne ve stejné kontrole. Stejný obraz hassfestu jako v CI jde spustit místně:
 
 ```bash
 docker run --rm -v "$PWD://github/workspace" ghcr.io/home-assistant/hassfest

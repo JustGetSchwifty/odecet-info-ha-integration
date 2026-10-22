@@ -8,6 +8,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 Nothing was tagged before this release, so the work that landed on `main` is recorded once, as 0.1.4, instead of as invented intermediate versions.
 
+## [0.3.3] - 2026-10-22
+
+Setup text and meter names follow the Home Assistant system language. Install starts with a HACS search.
+
+### Fixed
+
+- The sentence about meter types, the heat explanation link, and the meter device name follow Settings → System → General. The integration no longer reads the frontend profile file.
+- A meter device is named with a device translation key. Home Assistant stores `Heat [S/N 39584888]` or `Teplo [výrobní číslo 39584888]` from that system language.
+- A test rejects reading another integration's storage, including opening that file by name.
+
+### Changed
+
+- Install leads with a HACS search for **Odecet.info**. Adding the GitHub repository by hand stays the fallback when search does not list it.
+
+### Why
+
+A custom integration must not read another integration's stored data. The profile lookup opened the frontend user file by name so hassfest would not see an import.
+
 ## [0.3.2] - 2026-10-07
 
 An English profile no longer gets Czech setup text, and a heat counter of 372 no longer looks like 372,000.
